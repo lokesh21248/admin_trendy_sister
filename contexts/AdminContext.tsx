@@ -199,17 +199,33 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         if (dbBanners) setBanners(dbBanners)
       }
 
-      // Load saved orders from local storage if available
-      if (typeof window !== "undefined") {
-        const savedOrders = localStorage.getItem(STORAGE_KEYS.ORDERS)
-        if (savedOrders) {
-          try {
-            const parsed = JSON.parse(savedOrders)
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              setOrders(parsed)
-            }
-          } catch (e) {}
+      // 5. Fetch Orders from /api/admin/orders (Live Customer Orders)
+      try {
+        const ordersRes = await fetch("/api/admin/orders", {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        })
+        const ordersData = await ordersRes.json()
+        if (ordersData.success && Array.isArray(ordersData.orders) && ordersData.orders.length > 0) {
+          setOrders(ordersData.orders)
+          if (typeof window !== "undefined") {
+            try {
+              localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(ordersData.orders))
+            } catch (e) {}
+          }
+        } else if (typeof window !== "undefined") {
+          const savedOrders = localStorage.getItem(STORAGE_KEYS.ORDERS)
+          if (savedOrders) {
+            try {
+              const parsed = JSON.parse(savedOrders)
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setOrders(parsed)
+              }
+            } catch (e) {}
+          }
         }
+      } catch (ordErr) {
+        console.warn("[AdminContext] Error fetching orders:", ordErr)
       }
     } catch (err) {
       console.error("[AdminContext] Error loading admin data:", err)
@@ -220,7 +236,36 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     loadData()
-  }, [loadData])
+
+    // Realtime subscription: live updates when customer places an order
+    const supabase = createClient()
+    const channel = supabase
+      .channel("admin-orders-realtime-listener")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        (payload) => {
+          console.log("[AdminContext] Realtime customer order event:", payload)
+          fetch("/api/admin/orders", { cache: "no-store" })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success && Array.isArray(data.orders)) {
+                setOrders(data.orders)
+              }
+            })
+            .catch((e) => console.warn(e))
+
+          if (payload.eventType === "INSERT") {
+            showToast("New Order Received!", "A customer just placed a new order on the website.", "success")
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [loadData, showToast])
 
   const persistOrders = useCallback((updated: AdminOrder[]) => {
     setOrders(updated)
@@ -566,7 +611,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   // Update Order Status
   const updateOrderStatus = useCallback(
-    (orderId: string, status: OrderStatus, paymentStatus?: AdminOrder["payment_status"]) => {
+    async (orderId: string, status: OrderStatus, paymentStatus?: AdminOrder["payment_status"]) => {
       const next = orders.map((o) => {
         if (o.id !== orderId) return o
         return {
@@ -577,6 +622,17 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         }
       })
       persistOrders(next)
+
+      try {
+        await fetch("/api/admin/orders", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, status, paymentStatus }),
+        })
+      } catch (e) {
+        console.warn("[AdminContext] Could not update order on server:", e)
+      }
+
       showToast("Fulfillment Updated", `Order status changed to "${status.toUpperCase()}".`, "success")
     },
     [orders, persistOrders, showToast]
