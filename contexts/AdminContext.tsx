@@ -11,6 +11,7 @@ import {
   OrderStatus,
   ProductWithDetails,
   AdminOrder,
+  AdminCoupon,
   FilterPill,
   ToastMessage,
 } from "@/types/admin"
@@ -90,6 +91,16 @@ interface AdminContextType {
   updateBanner: (id: string, updates: Partial<Banner>) => void
   createBanner: (data: Partial<Banner>) => void
   deleteBanner: (id: string) => void
+
+  // Coupon Actions
+  coupons: AdminCoupon[]
+  createCoupon: (coupon: Partial<AdminCoupon>) => Promise<AdminCoupon | null>
+  updateCoupon: (id: string, updates: Partial<AdminCoupon>) => Promise<boolean>
+  deleteCoupon: (id: string) => Promise<boolean>
+  toggleCouponStatus: (id: string) => Promise<boolean>
+
+  // Manual Customer Booking
+  createManualOrder: (orderData: any) => Promise<boolean>
 }
 
 const AdminContext = createContext<AdminContextType | null>(null)
@@ -104,6 +115,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [collections, setCollections] = useState<Collection[]>([])
   const [banners, setBanners] = useState<Banner[]>([])
   const [orders, setOrders] = useState<AdminOrder[]>(INITIAL_SAMPLE_ORDERS)
+  const [coupons, setCoupons] = useState<AdminCoupon[]>([])
   const [loading, setLoading] = useState(true)
   const [isSupabaseLive, setIsSupabaseLive] = useState(false)
   const [selectedAuditProductId, setSelectedAuditProductId] = useState<string | null>(null)
@@ -226,6 +238,20 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (ordErr) {
         console.warn("[AdminContext] Error fetching orders:", ordErr)
+      }
+
+      // 6. Fetch Coupons from /api/admin/coupons
+      try {
+        const coupRes = await fetch("/api/admin/coupons", {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        })
+        const coupData = await coupRes.json()
+        if (coupData.success && Array.isArray(coupData.coupons)) {
+          setCoupons(coupData.coupons)
+        }
+      } catch (coupErr) {
+        console.warn("[AdminContext] Error fetching coupons:", coupErr)
       }
     } catch (err) {
       console.error("[AdminContext] Error loading admin data:", err)
@@ -788,6 +814,116 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     [showToast]
   )
 
+  // Coupon Actions
+  const createCoupon = useCallback(
+    async (couponData: Partial<AdminCoupon>): Promise<AdminCoupon | null> => {
+      try {
+        const res = await fetch("/api/admin/coupons", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(couponData),
+        })
+        const data = await res.json()
+        if (data.success && data.coupon) {
+          setCoupons((prev) => [data.coupon, ...prev.filter((c) => c.id !== data.coupon.id)])
+          showToast("Coupon Created", `Promo code "${data.coupon.code}" is now active.`, "success")
+          return data.coupon
+        }
+        showToast("Coupon Error", data.error || "Failed to create coupon", "error")
+        return null
+      } catch (e: any) {
+        showToast("Coupon Error", e.message || "Failed to create coupon", "error")
+        return null
+      }
+    },
+    [showToast]
+  )
+
+  const updateCoupon = useCallback(
+    async (id: string, updates: Partial<AdminCoupon>): Promise<boolean> => {
+      setCoupons((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)))
+      try {
+        await fetch("/api/admin/coupons", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, updates }),
+        })
+        showToast("Coupon Updated", "Promo settings saved.", "success")
+        return true
+      } catch (e: any) {
+        return false
+      }
+    },
+    [showToast]
+  )
+
+  const deleteCoupon = useCallback(
+    async (id: string): Promise<boolean> => {
+      setCoupons((prev) => prev.filter((c) => c.id !== id))
+      try {
+        await fetch(`/api/admin/coupons?id=${id}`, { method: "DELETE" })
+        showToast("Coupon Removed", "Promo code deleted.", "info")
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    [showToast]
+  )
+
+  const toggleCouponStatus = useCallback(
+    async (id: string): Promise<boolean> => {
+      const current = coupons.find((c) => c.id === id)
+      if (!current) return false
+      const newStatus = !current.is_active
+      setCoupons((prev) => prev.map((c) => (c.id === id ? { ...c, is_active: newStatus } : c)))
+      try {
+        await fetch("/api/admin/coupons", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, updates: { is_active: newStatus } }),
+        })
+        showToast(
+          newStatus ? "Coupon Activated" : "Coupon Paused",
+          `Promo "${current.code}" is ${newStatus ? "LIVE" : "PAUSED"}.`,
+          "success"
+        )
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    [coupons, showToast]
+  )
+
+  const createManualOrder = useCallback(
+    async (orderData: any): Promise<boolean> => {
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        })
+        const data = await res.json()
+        if (data.success) {
+          showToast("Order Booked!", `Order ${data.order_number} created in database.`, "success")
+          const ordersRes = await fetch("/api/admin/orders", { cache: "no-store" })
+          const ordersData = await ordersRes.json()
+          if (ordersData.success && Array.isArray(ordersData.orders)) {
+            setOrders(ordersData.orders)
+          }
+          return true
+        }
+        showToast("Booking Error", data.error || "Failed to book order", "error")
+        return false
+      } catch (e: any) {
+        showToast("Booking Error", e.message || "Failed to book order", "error")
+        return false
+      }
+    },
+    [showToast]
+  )
+
   // Computed Executive Statistics
   const stats = useMemo<AdminStats>(() => {
     const totalSarees = products.length
@@ -887,6 +1023,14 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         updateBanner,
         createBanner,
         deleteBanner,
+
+        coupons,
+        createCoupon,
+        updateCoupon,
+        deleteCoupon,
+        toggleCouponStatus,
+
+        createManualOrder,
       }}
     >
       {children}

@@ -70,7 +70,25 @@ export interface AdminOrder {
   payment_method: "UPI" | "Card" | "Net Banking" | "Cash on Delivery"
   payment_status: "pending" | "paid" | "failed" | "refunded"
   notes?: string | null
+  tracking_number?: string | null
+  courier_partner?: string | null
   order_items: AdminOrderItem[]
+  created_at: string
+  updated_at: string
+}
+
+export interface AdminCoupon {
+  id: string
+  code: string
+  description?: string | null
+  discount_type: "percentage" | "fixed"
+  discount_value: number
+  min_order_value: number
+  max_discount_amount?: number | null
+  usage_limit?: number | null
+  times_used: number
+  is_active: boolean
+  expires_at?: string | null
   created_at: string
   updated_at: string
 }

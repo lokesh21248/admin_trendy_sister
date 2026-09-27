@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Sparkles,
   Database,
+  TicketPercent,
   X,
 } from "lucide-react"
 
@@ -26,7 +27,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
   const pathname = usePathname()
-  const { stats, isSupabaseLive } = useAdmin()
+  const { stats, isSupabaseLive, coupons } = useAdmin()
   const [collapsed, setCollapsed] = useState(false)
 
   const navItems = [
@@ -59,6 +60,14 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
       icon: ShoppingBag,
       badge: stats.pendingOrdersCount > 0 ? `${stats.pendingOrdersCount} new` : null,
       badgeVariant: "accent",
+      isStar: false,
+    },
+    {
+      label: "Coupons & Discounts",
+      href: "/admin/coupons",
+      icon: TicketPercent,
+      badge: coupons.filter((c) => c.is_active).length > 0 ? `${coupons.filter((c) => c.is_active).length} live` : null,
+      badgeVariant: "success",
       isStar: false,
     },
     {
