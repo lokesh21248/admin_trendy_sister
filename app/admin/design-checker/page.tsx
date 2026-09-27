@@ -40,7 +40,7 @@ import {
 import { AdminImageUpload } from "@/components/admin/AdminImageUpload"
 import { uploadImageToStorage } from "@/lib/admin/storage"
 
-export default function DesignCheckerPage() {
+function DesignCheckerContent() {
   const searchParams = useSearchParams()
   const initialId = searchParams.get("id")
   const initialFilter = searchParams.get("filter") as FilterPill | null
@@ -1305,5 +1305,13 @@ export default function DesignCheckerPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function DesignCheckerPage() {
+  return (
+    <React.Suspense fallback={<div className="p-8 flex items-center justify-center text-sm text-[#6B5E51]">Loading Design Checker...</div>}>
+      <DesignCheckerContent />
+    </React.Suspense>
   )
 }

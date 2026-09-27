@@ -30,7 +30,7 @@ import {
 } from "@/types/admin"
 import { AdminImageUpload } from "@/components/admin/AdminImageUpload"
 
-export default function AdminProductsPage() {
+function AdminProductsContent() {
   const searchParams = useSearchParams()
   const actionParam = searchParams.get("action")
 
@@ -633,10 +633,6 @@ export default function AdminProductsPage() {
             await updateProduct(editingProduct.id, updates)
             setEditingProduct(null)
           }}
-          onAddImage={async (url) => {
-            const { addProductImage } = useAdmin()
-            // Handled inside component
-          }}
         />
       )}
     </div>
@@ -1083,5 +1079,13 @@ function EditProductModal({
         </form>
       </div>
     </div>
+  )
+}
+
+export default function AdminProductsPage() {
+  return (
+    <React.Suspense fallback={<div className="p-8 flex items-center justify-center text-sm text-[#6B5E51]">Loading Saree Inventory...</div>}>
+      <AdminProductsContent />
+    </React.Suspense>
   )
 }

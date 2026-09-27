@@ -177,7 +177,7 @@ export async function PUT(req: NextRequest) {
 
     const supabase = getAdminSupabaseClient()
 
-    const sanitizedUpdates: Record<string, any> = {
+    const sanitizedUpdates: Database["public"]["Tables"]["products"]["Update"] = {
       updated_at: new Date().toISOString(),
     }
 
