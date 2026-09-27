@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { useAdmin } from "@/contexts/AdminContext"
 import {
   TicketPercent,
@@ -53,6 +53,26 @@ export default function AdminCouponsPage() {
     expires_at: "",
     is_active: true,
   })
+
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  const formatExpiryDate = (expiresAt: string | null | undefined) => {
+    if (!expiresAt) return "No Expiration"
+    if (!isMounted) {
+      const d = new Date(expiresAt)
+      if (isNaN(d.getTime())) return "No Expiration"
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      return `${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+    }
+    return new Date(expiresAt).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
+  }
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -248,13 +268,7 @@ export default function AdminCouponsPage() {
         {filteredCoupons.map((coupon) => {
           const isCopied = copiedId === coupon.id
           const hasExpiry = Boolean(coupon.expires_at)
-          const expiryDateStr = coupon.expires_at
-            ? new Date(coupon.expires_at).toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })
-            : "No Expiration"
+          const expiryDateStr = formatExpiryDate(coupon.expires_at)
 
           return (
             <div
@@ -347,7 +361,7 @@ export default function AdminCouponsPage() {
                   <div className="flex items-center justify-between pt-1 border-t border-[#E8DCC8]/60 text-[11px] text-[#8C8074]">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3 text-[#B88A3B]" />
-                      <span>{expiryDateStr}</span>
+                      <span suppressHydrationWarning>{expiryDateStr}</span>
                     </div>
                   </div>
                 </div>

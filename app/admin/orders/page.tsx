@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { useAdmin } from "@/contexts/AdminContext"
 import {
   ShoppingBag,
@@ -56,12 +56,34 @@ export default function AdminOrdersPage() {
   const [courierPartner, setCourierPartner] = useState("Blue Dart")
   const [adminNote, setAdminNote] = useState("")
 
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
       maximumFractionDigits: 0,
     }).format(amount)
+  }
+
+  const formatOrderDate = (created_at: string) => {
+    if (!created_at) return "—"
+    if (!isMounted) {
+      const d = new Date(created_at)
+      if (isNaN(d.getTime())) return "—"
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      return `${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+    }
+    return new Date(created_at).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
   }
 
   const filteredOrders = useMemo(() => {
@@ -280,16 +302,7 @@ export default function AdminOrdersPage() {
             <tbody className="divide-y divide-[#F0E6D8]">
               {filteredOrders.map((order) => {
                 const color = statusColors[order.status] || statusColors.pending
-                const dateStr = new Date(order.created_at).toLocaleDateString(
-                  "en-IN",
-                  {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }
-                )
+                const dateStr = formatOrderDate(order.created_at)
 
                 return (
                   <tr
@@ -303,7 +316,7 @@ export default function AdminOrdersPage() {
                       </div>
                       <div className="flex items-center gap-1 text-[11px] text-[#8C8074] mt-0.5">
                         <Calendar className="w-3 h-3" />
-                        <span>{dateStr}</span>
+                        <span suppressHydrationWarning>{dateStr}</span>
                       </div>
                     </td>
 
@@ -473,12 +486,16 @@ export default function AdminOrdersPage() {
                     {selectedOrder.status.toUpperCase()}
                   </span>
                 </div>
-                <p className="text-xs text-[#8C8074] mt-1">
+                <p className="text-xs text-[#8C8074] mt-1" suppressHydrationWarning>
                   Placed on{" "}
-                  {new Date(selectedOrder.created_at).toLocaleString("en-IN", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
+                  <span suppressHydrationWarning>
+                    {isMounted
+                      ? new Date(selectedOrder.created_at).toLocaleString("en-IN", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
+                      : "—"}
+                  </span>
                 </p>
               </div>
 

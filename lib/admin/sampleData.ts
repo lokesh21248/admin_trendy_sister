@@ -24,8 +24,8 @@ export const INITIAL_SAMPLE_ORDERS: AdminOrder[] = [
     payment_method: "UPI",
     payment_status: "paid",
     notes: "Please pack with extra tissue layers for zari border protection.",
-    created_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45 mins ago
-    updated_at: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
+    created_at: "2026-09-27T14:30:00.000Z",
+    updated_at: "2026-09-27T14:45:00.000Z",
     order_items: [
       {
         id: "item-1",
@@ -62,8 +62,8 @@ export const INITIAL_SAMPLE_ORDERS: AdminOrder[] = [
     payment_method: "Card",
     payment_status: "paid",
     notes: "Blue Dart tracking AWB #BD88921820",
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), // 5 hours ago
-    updated_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    created_at: "2026-09-27T10:15:00.000Z",
+    updated_at: "2026-09-27T12:00:00.000Z",
     order_items: [
       {
         id: "item-2",
@@ -110,8 +110,8 @@ export const INITIAL_SAMPLE_ORDERS: AdminOrder[] = [
     payment_method: "Net Banking",
     payment_status: "paid",
     notes: null,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 14).toISOString(), // 14 hours ago
-    updated_at: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+    created_at: "2026-09-26T21:00:00.000Z",
+    updated_at: "2026-09-26T22:30:00.000Z",
     order_items: [
       {
         id: "item-4",
@@ -148,8 +148,8 @@ export const INITIAL_SAMPLE_ORDERS: AdminOrder[] = [
     payment_method: "UPI",
     payment_status: "paid",
     notes: "Delivered securely with gift box packaging.",
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(),
-    updated_at: new Date(Date.now() - 1000 * 60 * 60 * 20).toISOString(),
+    created_at: "2026-09-25T11:00:00.000Z",
+    updated_at: "2026-09-25T16:00:00.000Z",
     order_items: [
       {
         id: "item-5",
@@ -186,8 +186,8 @@ export const INITIAL_SAMPLE_ORDERS: AdminOrder[] = [
     payment_method: "Cash on Delivery",
     payment_status: "pending",
     notes: "Customer requested delivery confirmation call before dispatch.",
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-    updated_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+    created_at: "2026-09-24T18:00:00.000Z",
+    updated_at: "2026-09-24T18:00:00.000Z",
     order_items: [
       {
         id: "item-6",

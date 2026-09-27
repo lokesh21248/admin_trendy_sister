@@ -49,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable} data-scroll-behavior="smooth">
+    <html lang="en" className={inter.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -58,7 +58,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen w-full flex flex-col overflow-x-hidden">
+      <body className="min-h-screen w-full flex flex-col overflow-x-hidden" suppressHydrationWarning>
         <CartProvider>
           <WishlistProvider>
             <StoreLayoutShell>{children}</StoreLayoutShell>
