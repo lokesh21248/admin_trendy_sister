@@ -78,6 +78,10 @@ interface AdminContextType {
     status: OrderStatus,
     paymentStatus?: AdminOrder["payment_status"]
   ) => void
+  acceptOrder: (orderId: string) => Promise<void>
+  rejectOrder: (orderId: string) => Promise<void>
+  updateOrderDetails: (orderId: string, payload: Partial<AdminOrder>) => Promise<boolean>
+  refreshOrders: () => Promise<void>
 
   // Category & Collection Actions
   updateCategory: (id: string, updates: Partial<Category>) => void
@@ -288,7 +292,27 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       )
       .subscribe()
 
+    // 10-second background heartbeat polling for 100% reliable order arrival
+    const pollTimer = setInterval(() => {
+      fetch("/api/admin/orders", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && Array.isArray(data.orders)) {
+            setOrders((prev) => {
+              const prevIds = new Set(prev.map((o) => o.id))
+              const hasNew = data.orders.some((o: AdminOrder) => !prevIds.has(o.id))
+              if (hasNew) {
+                showToast("New Order Received!", "A new order was just placed on the customer website.", "success")
+              }
+              return data.orders
+            })
+          }
+        })
+        .catch(() => {})
+    }, 10000)
+
     return () => {
+      clearInterval(pollTimer)
       supabase.removeChannel(channel)
     }
   }, [loadData, showToast])
@@ -664,6 +688,86 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     [orders, persistOrders, showToast]
   )
 
+  // 1-Click Accept Order Action
+  const acceptOrder = useCallback(
+    async (orderId: string) => {
+      await updateOrderStatus(orderId, "confirmed")
+      showToast("Order Accepted! 🎉", "Customer order is confirmed and ready for packing.", "success")
+    },
+    [updateOrderStatus, showToast]
+  )
+
+  // 1-Click Reject Order Action
+  const rejectOrder = useCallback(
+    async (orderId: string) => {
+      await updateOrderStatus(orderId, "cancelled")
+      showToast("Order Rejected", "Order has been marked as cancelled.", "info")
+    },
+    [updateOrderStatus, showToast]
+  )
+
+  // Full Customer & Address Details Update
+  const updateOrderDetails = useCallback(
+    async (orderId: string, payload: Partial<AdminOrder>): Promise<boolean> => {
+      setOrders((prev) =>
+        prev.map((o) => {
+          if (o.id !== orderId) return o
+          return {
+            ...o,
+            ...payload,
+            updated_at: new Date().toISOString(),
+          }
+        })
+      )
+
+      try {
+        const res = await fetch("/api/admin/orders", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId,
+            status: payload.status,
+            paymentStatus: payload.payment_status,
+            customer_name: payload.customer_name,
+            customer_phone: payload.customer_phone,
+            customer_email: payload.customer_email,
+            address: payload.address,
+            notes: payload.notes,
+          }),
+        })
+        const data = await res.json()
+        if (data.success) {
+          showToast("Order Details Saved", "Customer and delivery address updated successfully.", "success")
+          return true
+        } else {
+          showToast("Save Warning", data.error || "Could not sync to database.", "warning")
+          return false
+        }
+      } catch (e) {
+        showToast("Network Error", "Could not reach server.", "error")
+        return false
+      }
+    },
+    [showToast]
+  )
+
+  // Manual Trigger to Refresh Orders
+  const refreshOrders = useCallback(async () => {
+    try {
+      const ordersRes = await fetch("/api/admin/orders", {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      })
+      const ordersData = await ordersRes.json()
+      if (ordersData.success && Array.isArray(ordersData.orders)) {
+        setOrders(ordersData.orders)
+        showToast("Live Orders Synced", `${ordersData.orders.length} orders loaded from database.`, "info")
+      }
+    } catch (e) {
+      console.warn("Orders refresh failed:", e)
+    }
+  }, [showToast])
+
   // Category Actions
   const updateCategory = useCallback(
     async (id: string, updates: Partial<Category>) => {
@@ -1012,6 +1116,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         reorderProductImages,
 
         updateOrderStatus,
+        acceptOrder,
+        rejectOrder,
+        updateOrderDetails,
+        refreshOrders,
 
         updateCategory,
         createCategory,

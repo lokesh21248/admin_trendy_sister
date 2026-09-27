@@ -22,11 +22,23 @@ import {
   ExternalLink,
   Save,
   MessageCircle,
+  AlertTriangle,
+  RefreshCw,
+  User,
 } from "lucide-react"
 import { OrderStatus, AdminOrder } from "@/types/admin"
 
 export default function AdminOrdersPage() {
-  const { orders, updateOrderStatus, createManualOrder, products } = useAdmin()
+  const {
+    orders,
+    updateOrderStatus,
+    acceptOrder,
+    rejectOrder,
+    updateOrderDetails,
+    refreshOrders,
+    createManualOrder,
+    products,
+  } = useAdmin()
 
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -55,6 +67,18 @@ export default function AdminOrdersPage() {
   const [trackingNumber, setTrackingNumber] = useState("")
   const [courierPartner, setCourierPartner] = useState("Blue Dart")
   const [adminNote, setAdminNote] = useState("")
+
+  // Customer Details Edit State in Modal
+  const [editCustomerName, setEditCustomerName] = useState("")
+  const [editCustomerPhone, setEditCustomerPhone] = useState("")
+  const [editCustomerEmail, setEditCustomerEmail] = useState("")
+  const [editHouseFlat, setEditHouseFlat] = useState("")
+  const [editStreet, setEditStreet] = useState("")
+  const [editCity, setEditCity] = useState("Bengaluru")
+  const [editState, setEditState] = useState("Karnataka")
+  const [editPincode, setEditPincode] = useState("560001")
+  const [isSavingDetails, setIsSavingDetails] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
@@ -128,6 +152,60 @@ export default function AdminOrdersPage() {
     setTrackingNumber(order.tracking_number || "")
     setCourierPartner(order.courier_partner || "Blue Dart")
     setAdminNote(order.notes || "")
+    const isGeneric =
+      !order.customer_name ||
+      order.customer_name === "Storefront Customer" ||
+      order.customer_name.startsWith("Storefront Customer (")
+    setEditCustomerName(isGeneric ? "" : order.customer_name)
+    setEditCustomerPhone(order.customer_phone === "Not provided" ? "" : (order.customer_phone || ""))
+    setEditCustomerEmail(order.customer_email || "")
+    setEditHouseFlat(order.address?.house_flat === "Address not provided" ? "" : (order.address?.house_flat || ""))
+    setEditStreet(order.address?.street || "")
+    setEditCity(order.address?.city || "Bengaluru")
+    setEditState(order.address?.state || "Karnataka")
+    setEditPincode(order.address?.pincode === "560001" ? "" : (order.address?.pincode || ""))
+  }
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true)
+    await refreshOrders()
+    setTimeout(() => setIsRefreshing(false), 500)
+  }
+
+  const handleSaveCustomerDetails = async () => {
+    if (!selectedOrder) return
+    setIsSavingDetails(true)
+    try {
+      const updatedAddress = {
+        full_name: editCustomerName.trim() || selectedOrder.customer_name,
+        phone: editCustomerPhone.trim() || selectedOrder.customer_phone,
+        house_flat: editHouseFlat.trim() || "House on File",
+        street: editStreet.trim() || "Main Road",
+        city: editCity.trim() || "Bengaluru",
+        state: editState.trim() || "Karnataka",
+        pincode: editPincode.trim() || "560001",
+      }
+
+      await updateOrderDetails(selectedOrder.id, {
+        customer_name: editCustomerName.trim() || selectedOrder.customer_name,
+        customer_phone: editCustomerPhone.trim() || selectedOrder.customer_phone,
+        customer_email: editCustomerEmail.trim() || selectedOrder.customer_email,
+        address: updatedAddress,
+        notes: adminNote,
+        has_missing_details: false,
+      })
+
+      setSelectedOrder({
+        ...selectedOrder,
+        customer_name: editCustomerName.trim() || selectedOrder.customer_name,
+        customer_phone: editCustomerPhone.trim() || selectedOrder.customer_phone,
+        customer_email: editCustomerEmail.trim() || selectedOrder.customer_email,
+        address: updatedAddress,
+        has_missing_details: false,
+      })
+    } finally {
+      setIsSavingDetails(false)
+    }
   }
 
   const handleSaveTracking = async () => {
@@ -224,7 +302,17 @@ export default function AdminOrdersPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleManualRefresh}
+            disabled={isRefreshing}
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white border border-[#E8DCC8] hover:border-[#D4AF37] text-xs font-semibold text-[#651F35] shadow-xs transition-all cursor-pointer"
+            title="Fetch latest customer orders from database"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#D4AF37]" : ""}`} />
+            <span>{isRefreshing ? "Syncing..." : "Refresh Orders"}</span>
+          </button>
+
           <button
             onClick={() => setIsBookModalOpen(true)}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer"
@@ -238,6 +326,39 @@ export default function AdminOrdersPage() {
           </div>
         </div>
       </div>
+
+      {/* PENDING ORDERS ALERT BANNER */}
+      {orders.filter((o) => o.status === "pending").length > 0 && (
+        <div className="rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-white border-2 border-amber-400 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
+              <Clock className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="font-serif font-bold text-sm text-[#25201D]">
+                  ⚡ {orders.filter((o) => o.status === "pending").length} New Customer Order(s) Pending Acceptance
+                </h4>
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                  Action Required
+                </span>
+              </div>
+              <p className="text-xs text-[#6B5E51] mt-0.5">
+                New orders booked by customers on the storefront require your confirmation before packaging.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setStatusFilter("pending")}
+              className="px-3.5 py-2 rounded-xl bg-white border border-amber-300 text-amber-900 font-bold text-xs hover:bg-amber-50 transition-all cursor-pointer shadow-2xs"
+            >
+              Filter Pending ({orders.filter((o) => o.status === "pending").length})
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Search & Filter Toolbar */}
       <div className="bg-white rounded-2xl p-4 border border-[#E8DCC8] shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
@@ -318,6 +439,11 @@ export default function AdminOrdersPage() {
                         <Calendar className="w-3 h-3" />
                         <span suppressHydrationWarning>{dateStr}</span>
                       </div>
+                      {order.status === "pending" && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-900 border border-amber-300 inline-block mt-1">
+                          ⚡ ACTION REQUIRED
+                        </span>
+                      )}
                     </td>
 
                     {/* Customer & Destination */}
@@ -325,13 +451,23 @@ export default function AdminOrdersPage() {
                       <div className="font-bold text-xs text-[#25201D]">
                         {order.customer_name}
                       </div>
-                      <div className="flex items-center gap-1 text-[11px] text-[#6B5E51] mt-0.5">
-                        <MapPin className="w-3 h-3 text-[#B88A3B]" />
-                        <span>
-                          {order.address?.city || "Bengaluru"}, {order.address?.state || "Karnataka"} (
-                          {order.address?.pincode || "560001"})
-                        </span>
-                      </div>
+                      {order.has_missing_details ? (
+                        <button
+                          onClick={() => openOrderDetails(order)}
+                          className="mt-1 text-[10px] font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded px-1.5 py-0.5 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                        >
+                          <AlertTriangle className="w-3 h-3 text-amber-600" />
+                          <span>Address Missing (Add Here)</span>
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-1 text-[11px] text-[#6B5E51] mt-0.5">
+                          <MapPin className="w-3 h-3 text-[#B88A3B]" />
+                          <span>
+                            {order.address?.city || "Bengaluru"}, {order.address?.state || "Karnataka"} (
+                            {order.address?.pincode || "560001"})
+                          </span>
+                        </div>
+                      )}
                       <div className="text-[10px] text-[#8C8074] mt-0.5">
                         {order.customer_phone}
                       </div>
@@ -402,33 +538,65 @@ export default function AdminOrdersPage() {
                       </div>
                     </td>
 
-                    {/* Fulfillment Status Dropdown */}
+                    {/* Fulfillment Status & 1-Click Actions */}
                     <td className="py-3.5 px-3">
-                      <div className="flex items-center gap-2">
-                        <select
-                          value={order.status}
-                          onChange={(e) =>
-                            updateOrderStatus(
-                              order.id,
-                              e.target.value as OrderStatus,
-                              order.payment_status
-                            )
-                          }
-                          className={`text-xs font-bold rounded-xl px-2.5 py-1.5 border focus:ring-1 focus:ring-[#D4AF37] focus:outline-none cursor-pointer ${color.bg} ${color.text} ${color.border}`}
-                        >
-                          {allStatuses.map((st) => (
-                            <option key={st} value={st}>
-                              {st.replace(/_/g, " ").toUpperCase()}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <div className="space-y-1.5">
+                        {order.status === "pending" ? (
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => acceptOrder(order.id)}
+                              className="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs inline-flex items-center gap-1 cursor-pointer transition-transform active:scale-95"
+                              title="Accept & Confirm Customer Order"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Accept Order</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Reject order ${order.order_number}?`)) rejectOrder(order.id)
+                              }}
+                              className="px-2 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 transition-colors cursor-pointer"
+                              title="Decline/Cancel order"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : order.status === "confirmed" ? (
+                          <button
+                            onClick={() => updateOrderStatus(order.id, "processing")}
+                            className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs inline-flex items-center gap-1 hover:bg-blue-100 cursor-pointer"
+                          >
+                            <Package className="w-3 h-3 text-blue-600" />
+                            <span>Pack Saree</span>
+                          </button>
+                        ) : null}
 
-                      {order.notes && (
-                        <div className="text-[10px] text-[#8C8074] italic mt-1 max-w-[180px] truncate" title={order.notes}>
-                          {order.notes}
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={order.status}
+                            onChange={(e) =>
+                              updateOrderStatus(
+                                order.id,
+                                e.target.value as OrderStatus,
+                                order.payment_status
+                              )
+                            }
+                            className={`text-xs font-bold rounded-xl px-2 py-1 border focus:ring-1 focus:ring-[#D4AF37] focus:outline-none cursor-pointer ${color.bg} ${color.text} ${color.border}`}
+                          >
+                            {allStatuses.map((st) => (
+                              <option key={st} value={st}>
+                                {st.replace(/_/g, " ").toUpperCase()}
+                              </option>
+                            ))}
+                          </select>
                         </div>
-                      )}
+
+                        {order.notes && (
+                          <div className="text-[10px] text-[#8C8074] italic max-w-[180px] truncate" title={order.notes}>
+                            {order.notes}
+                          </div>
+                        )}
+                      </div>
                     </td>
 
                     {/* Action Button */}
@@ -518,49 +686,129 @@ export default function AdminOrdersPage() {
 
             {/* Modal Body */}
             <div className="p-6 space-y-6">
-              {/* Customer & Address Card */}
-              <div className="grid sm:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8]">
-                <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B6E32] block mb-1">
-                    Customer Information
-                  </span>
-                  <h4 className="font-bold text-sm text-[#25201D]">
-                    {selectedOrder.customer_name}
-                  </h4>
-                  <div className="mt-1 space-y-1 text-xs text-[#6B5E51]">
-                    <div className="flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5 text-[#B88A3B]" />
-                      <span>{selectedOrder.customer_phone}</span>
-                      <a
-                        href={`https://wa.me/${selectedOrder.customer_phone.replace(/[^0-9]/g, "")}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="ml-1 text-emerald-700 font-bold hover:underline inline-flex items-center gap-0.5"
-                      >
-                        <MessageCircle className="w-3 h-3" /> WhatsApp
-                      </a>
+              {/* PENDING ACCEPTANCE BANNER INSIDE MODAL */}
+              {selectedOrder.status === "pending" && (
+                <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-white border-2 border-amber-300 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <span>This Order Is Pending Acceptance</span>
                     </div>
-                    {selectedOrder.customer_email && (
-                      <div className="flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-[#B88A3B]" />
-                        <span>{selectedOrder.customer_email}</span>
-                      </div>
-                    )}
+                    <p className="text-[11px] text-amber-700 mt-0.5">
+                      Confirm order to accept customer payment and initiate packing.
+                    </p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await acceptOrder(selectedOrder.id)
+                      setSelectedOrder({ ...selectedOrder, status: "confirmed" })
+                    }}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm inline-flex items-center gap-1.5 cursor-pointer transition-transform active:scale-95 shrink-0"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Accept Order</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Editable Customer & Delivery Address Card */}
+              <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B6E32] flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5" />
+                    <span>Customer & Delivery Destination</span>
+                  </span>
+                  {selectedOrder.has_missing_details && (
+                    <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                      ⚠️ Missing Address (Enter Below)
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6B5E51] mb-1">Customer Full Name</label>
+                    <input
+                      type="text"
+                      value={editCustomerName}
+                      onChange={(e) => setEditCustomerName(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8CFBC] text-[#25201D] text-xs focus:ring-1 focus:ring-[#D4AF37] outline-none"
+                      placeholder="e.g. Priya Sharma"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6B5E51] mb-1">Contact Phone Number</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="tel"
+                        value={editCustomerPhone}
+                        onChange={(e) => setEditCustomerPhone(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8CFBC] text-[#25201D] text-xs focus:ring-1 focus:ring-[#D4AF37] outline-none"
+                        placeholder="+91..."
+                      />
+                      {editCustomerPhone && (
+                        <a
+                          href={`https://wa.me/${editCustomerPhone.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shrink-0 inline-flex items-center"
+                          title="Message on WhatsApp"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-semibold text-[#6B5E51] mb-1">Street Address</label>
+                    <input
+                      type="text"
+                      value={editHouseFlat}
+                      onChange={(e) => setEditHouseFlat(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8CFBC] text-[#25201D] text-xs focus:ring-1 focus:ring-[#D4AF37] outline-none mb-1.5"
+                      placeholder="House/Flat No., Apartment, Building"
+                    />
+                    <input
+                      type="text"
+                      value={editStreet}
+                      onChange={(e) => setEditStreet(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8CFBC] text-[#25201D] text-xs focus:ring-1 focus:ring-[#D4AF37] outline-none"
+                      placeholder="Street, Colony, Area"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6B5E51] mb-1">City</label>
+                    <input
+                      type="text"
+                      value={editCity}
+                      onChange={(e) => setEditCity(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8CFBC] text-[#25201D] text-xs focus:ring-1 focus:ring-[#D4AF37] outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#6B5E51] mb-1">PIN Code</label>
+                    <input
+                      type="text"
+                      value={editPincode}
+                      onChange={(e) => setEditPincode(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8CFBC] text-[#25201D] text-xs focus:ring-1 focus:ring-[#D4AF37] outline-none"
+                    />
                   </div>
                 </div>
 
-                <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B6E32] block mb-1">
-                    Delivery Destination
-                  </span>
-                  <div className="text-xs text-[#25201D] leading-relaxed">
-                    <div>{selectedOrder.address?.house_flat}</div>
-                    <div>{selectedOrder.address?.street}</div>
-                    <div>
-                      {selectedOrder.address?.city}, {selectedOrder.address?.state} -{" "}
-                      <strong>{selectedOrder.address?.pincode}</strong>
-                    </div>
-                  </div>
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={handleSaveCustomerDetails}
+                    disabled={isSavingDetails}
+                    className="px-4 py-2 rounded-xl bg-[#651F35] hover:bg-[#501829] text-white font-bold text-xs shadow-xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{isSavingDetails ? "Saving..." : "Save Customer & Delivery Info"}</span>
+                  </button>
                 </div>
               </div>
 

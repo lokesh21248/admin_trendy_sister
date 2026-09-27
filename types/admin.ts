@@ -72,6 +72,7 @@ export interface AdminOrder {
   notes?: string | null
   tracking_number?: string | null
   courier_partner?: string | null
+  has_missing_details?: boolean
   order_items: AdminOrderItem[]
   created_at: string
   updated_at: string
