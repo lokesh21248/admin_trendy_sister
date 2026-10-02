@@ -138,7 +138,11 @@ export function AdminImageUpload({
                 className={`w-20 ${aspectClass} rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-[#E8DCC8] relative shadow-xs`}
               >
                 <img
-                  src={value}
+                  src={
+                    value.includes("{") || value.includes("%22") || value.includes('"')
+                      ? "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"
+                      : value
+                  }
                   alt="Uploaded image"
                   className="w-full h-full object-cover"
                 />
@@ -246,7 +250,11 @@ export function AdminImageUpload({
                 className={`w-10 ${aspectClass} rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-[#E8DCC8]`}
               >
                 <img
-                  src={value}
+                  src={
+                    value.includes("{") || value.includes("%22") || value.includes('"')
+                      ? "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"
+                      : value
+                  }
                   alt="Preview"
                   className="w-full h-full object-cover"
                 />
