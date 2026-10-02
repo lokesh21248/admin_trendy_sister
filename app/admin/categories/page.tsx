@@ -61,8 +61,10 @@ export default function AdminCategoriesPage() {
       clean.includes("}") || 
       clean.includes('"updated') || 
       clean.includes('%22updated') || 
+      clean.includes('updated_at') || 
       clean.includes('%7B') || // URL-encoded '{'
-      clean.match(/%22id%22/i)
+      clean.match(/%22id%22/i) ||
+      clean.match(/%22/i) // Any URL-encoded quotes
     ) {
       return fallback
     }
