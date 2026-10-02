@@ -16,7 +16,7 @@ export function calculateDesignCompleteness(
   const missingFields: string[] = []
 
   // 1. Fabric defined (+20%)
-  const hasFabric = Boolean(product.fabric && product.fabric.trim().length > 0)
+  const hasFabric = Boolean(product.fabric_material_id && product.fabric_material_id.trim().length > 0) || Boolean(product.fabric && product.fabric.trim().length > 0)
   if (!hasFabric) missingFields.push("Fabric Material")
 
   // 2. Color swatch selected (+20%)

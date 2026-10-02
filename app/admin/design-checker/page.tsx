@@ -32,7 +32,6 @@ import {
 import {
   FilterPill,
   SAREE_COLOR_PALETTES,
-  SAREE_FABRICS,
   SAREE_OCCASIONS,
   IMAGE_ANGLE_LABELS,
   ProductWithDetails,
@@ -49,6 +48,7 @@ function DesignCheckerContent() {
     products,
     categories,
     collections,
+    fabricMaterials,
     selectedAuditProductId,
     setSelectedAuditProductId,
     auditFilter,
@@ -70,6 +70,7 @@ function DesignCheckerContent() {
   const [formData, setFormData] = useState({
     name: "",
     sku: "",
+    fabric_material_id: "",
     fabric: "",
     color: "",
     occasion: "",
@@ -143,6 +144,7 @@ function DesignCheckerContent() {
       setFormData({
         name: currentSaree.name || "",
         sku: currentSaree.sku || "",
+        fabric_material_id: currentSaree.fabric_material_id || "",
         fabric: currentSaree.fabric || "",
         color: currentSaree.color || "",
         occasion: currentSaree.occasion || "",
@@ -647,14 +649,14 @@ function DesignCheckerContent() {
                     </div>
 
                     <div className="flex flex-wrap gap-1.5">
-                      {SAREE_FABRICS.map((fab) => {
-                        const isSelected = formData.fabric === fab
+                      {fabricMaterials.filter(f => f.is_active).map((fab) => {
+                        const isSelected = formData.fabric_material_id === fab.id
                         return (
                           <button
-                            key={fab}
+                            key={fab.id}
                             type="button"
                             onClick={() =>
-                              setFormData({ ...formData, fabric: fab })
+                              setFormData({ ...formData, fabric_material_id: fab.id, fabric: fab.name })
                             }
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
                               isSelected
@@ -662,7 +664,7 @@ function DesignCheckerContent() {
                                 : "bg-[#FAF7F2] text-[#4A3E31] border-[#E8DCC8] hover:border-[#B88A3B]"
                             }`}
                           >
-                            {fab}
+                            {fab.name}
                           </button>
                         )
                       })}

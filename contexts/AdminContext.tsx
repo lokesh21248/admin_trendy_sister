@@ -14,6 +14,7 @@ import {
   AdminCoupon,
   FilterPill,
   ToastMessage,
+  FabricMaterial,
 } from "@/types/admin"
 import { calculateDesignCompleteness } from "@/lib/admin/completeness"
 import { INITIAL_SAMPLE_ORDERS } from "@/lib/admin/sampleData"
@@ -44,6 +45,7 @@ interface AdminContextType {
   collections: Collection[]
   banners: Banner[]
   orders: AdminOrder[]
+  fabricMaterials: FabricMaterial[]
   loading: boolean
   isSupabaseLive: boolean
   selectedAuditProductId: string | null
@@ -96,6 +98,11 @@ interface AdminContextType {
   createBanner: (data: Partial<Banner>) => void
   deleteBanner: (id: string) => void
 
+  // Fabric Material Actions
+  updateFabricMaterial: (id: string, updates: Partial<FabricMaterial>) => Promise<boolean>
+  createFabricMaterial: (data: Partial<FabricMaterial>) => Promise<boolean>
+  deleteFabricMaterial: (id: string) => Promise<boolean>
+
   // Coupon Actions
   coupons: AdminCoupon[]
   createCoupon: (coupon: Partial<AdminCoupon>) => Promise<AdminCoupon | null>
@@ -118,6 +125,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [categories, setCategories] = useState<Category[]>([])
   const [collections, setCollections] = useState<Collection[]>([])
   const [banners, setBanners] = useState<Banner[]>([])
+  const [fabricMaterials, setFabricMaterials] = useState<FabricMaterial[]>([])
   const [orders, setOrders] = useState<AdminOrder[]>(INITIAL_SAMPLE_ORDERS)
   const [coupons, setCoupons] = useState<AdminCoupon[]>([])
   const [loading, setLoading] = useState(true)
@@ -166,6 +174,12 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         .select("*")
         .order("display_order", { ascending: true })
 
+      // 3.5 Fetch Fabric Materials
+      const { data: dbFabricMaterials } = await supabase
+        .from("fabric_materials")
+        .select("*")
+        .order("sort_order", { ascending: true })
+
       // 4. Fetch Products directly via server API or Supabase client
       const res = await fetch("/api/admin/products", {
         cache: "no-store",
@@ -213,6 +227,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         if (dbCategories) setCategories(dbCategories)
         if (dbCollections) setCollections(dbCollections)
         if (dbBanners) setBanners(dbBanners)
+        if (dbFabricMaterials) setFabricMaterials(dbFabricMaterials)
       }
 
       // 5. Fetch Orders from /api/admin/orders (Live Customer Orders)
@@ -915,7 +930,84 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {}
       showToast("Banner Removed", "Slide deleted from hero section.", "info")
     },
+    },
     [showToast]
+  )
+
+  // Fabric Material Actions
+  const updateFabricMaterial = useCallback(
+    async (id: string, updates: Partial<FabricMaterial>) => {
+      setFabricMaterials((prev) => prev.map((f) => (f.id === id ? { ...f, ...updates } : f)))
+      try {
+        const supabase = createClient()
+        const { error } = await supabase.from("fabric_materials").update(updates).eq("id", id)
+        if (error) throw error
+        showToast("Fabric Material Updated", "Changes saved successfully.", "success")
+        return true
+      } catch (e: any) {
+        showToast("Error", e.message || "Failed to update fabric material", "error")
+        return false
+      }
+    },
+    [showToast]
+  )
+
+  const createFabricMaterial = useCallback(
+    async (data: Partial<FabricMaterial>) => {
+      if (!data.name || !data.slug) return false
+      try {
+        const supabase = createClient()
+        const { data: newFabric, error } = await supabase
+          .from("fabric_materials")
+          .insert([
+            {
+              name: data.name,
+              slug: data.slug,
+              description: data.description || null,
+              is_active: data.is_active ?? true,
+              sort_order: data.sort_order ?? 0,
+            },
+          ])
+          .select()
+          .single()
+
+        if (error) throw error
+        if (newFabric) {
+          setFabricMaterials((prev) => [...prev, newFabric].sort((a, b) => a.sort_order - b.sort_order))
+          showToast("Fabric Material Added", `"${newFabric.name}" is now available.`, "success")
+          return true
+        }
+        return false
+      } catch (e: any) {
+        showToast("Error", e.message || "Failed to create fabric material", "error")
+        return false
+      }
+    },
+    [showToast]
+  )
+
+  const deleteFabricMaterial = useCallback(
+    async (id: string) => {
+      // Frontend check if in use
+      const inUseCount = products.filter(p => p.fabric_material_id === id).length;
+      if (inUseCount > 0) {
+        showToast("Cannot Delete", `This material is used by ${inUseCount} product(s). Deactivate it instead.`, "error");
+        return false;
+      }
+      
+      setFabricMaterials((prev) => prev.filter((f) => f.id !== id))
+      try {
+        const supabase = createClient()
+        const { error } = await supabase.from("fabric_materials").delete().eq("id", id)
+        if (error) throw error
+        showToast("Fabric Material Removed", "Deleted successfully.", "info")
+        return true
+      } catch (e: any) {
+        showToast("Error", e.message || "Failed to delete fabric material", "error")
+        return false
+      }
+    },
+    [products, showToast]
   )
 
   // Coupon Actions
@@ -1131,6 +1223,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         updateBanner,
         createBanner,
         deleteBanner,
+
+        fabricMaterials,
+        updateFabricMaterial,
+        createFabricMaterial,
+        deleteFabricMaterial,
 
         coupons,
         createCoupon,

@@ -94,6 +94,7 @@ export async function POST(req: NextRequest) {
       mrp,
       discount,
       fabric: product.fabric ? String(product.fabric).trim() : null,
+      fabric_material_id: sanitizeUuid(product.fabric_material_id),
       color: product.color ? String(product.color).trim() : null,
       occasion: product.occasion ? String(product.occasion).trim() : null,
       stock: product.stock !== undefined ? Math.max(0, parseInt(String(product.stock), 10) || 0) : 10,
@@ -208,6 +209,9 @@ export async function PUT(req: NextRequest) {
       }
       if ("fabric" in updates) {
         sanitizedUpdates.fabric = updates.fabric ? String(updates.fabric).trim() : null
+      }
+      if ("fabric_material_id" in updates) {
+        sanitizedUpdates.fabric_material_id = sanitizeUuid(updates.fabric_material_id)
       }
       if ("color" in updates) {
         sanitizedUpdates.color = updates.color ? String(updates.color).trim() : null

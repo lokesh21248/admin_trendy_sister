@@ -1,7 +1,7 @@
 import { Database } from "./database"
-import { Product, ProductImage, Category, Collection, Banner, OrderStatus } from "./index"
+import { Product, ProductImage, Category, Collection, Banner, OrderStatus, FabricMaterial } from "./index"
 
-export type { Product, ProductImage, Category, Collection, Banner, OrderStatus }
+export type { Product, ProductImage, Category, Collection, Banner, OrderStatus, FabricMaterial }
 
 export interface CompletenessCriterion {
   id: string

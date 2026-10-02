@@ -1,6 +1,7 @@
 import { Database } from "./database"
 
 export type Category = Database["public"]["Tables"]["categories"]["Row"]
+export type FabricMaterial = Database["public"]["Tables"]["fabric_materials"]["Row"]
 export type Collection = Database["public"]["Tables"]["collections"]["Row"]
 export type Product = Database["public"]["Tables"]["products"]["Row"]
 export type ProductImage = Database["public"]["Tables"]["product_images"]["Row"]

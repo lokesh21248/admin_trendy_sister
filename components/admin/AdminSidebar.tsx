@@ -18,6 +18,7 @@ import {
   Database,
   TicketPercent,
   X,
+  Scissors,
 } from "lucide-react"
 
 interface AdminSidebarProps {
@@ -110,6 +111,13 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
       label: "Categories & Edits",
       href: "/admin/categories",
       icon: FolderTree,
+      badge: null,
+      isStar: false,
+    },
+    {
+      label: "Fabric Materials",
+      href: "/admin/fabric-materials",
+      icon: Scissors,
       badge: null,
       isStar: false,
     },

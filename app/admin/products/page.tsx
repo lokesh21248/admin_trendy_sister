@@ -23,7 +23,6 @@ import {
   IndianRupee,
 } from "lucide-react"
 import {
-  SAREE_FABRICS,
   SAREE_OCCASIONS,
   SAREE_COLOR_PALETTES,
   ProductWithDetails,
@@ -38,6 +37,7 @@ function AdminProductsContent() {
     products,
     categories,
     collections,
+    fabricMaterials,
     createProduct,
     updateProduct,
     deleteProduct,
@@ -65,6 +65,7 @@ function AdminProductsContent() {
     sku: "",
     category_id: "",
     collection_id: "",
+    fabric_material_id: "",
     fabric: "",
     color: "",
     occasion: "",
@@ -90,7 +91,7 @@ function AdminProductsContent() {
       }
       if (selectedCategory !== "all" && p.category_id !== selectedCategory)
         return false
-      if (selectedFabric !== "all" && p.fabric !== selectedFabric) return false
+      if (selectedFabric !== "all" && p.fabric_material_id !== selectedFabric) return false
       if (selectedOccasion !== "all" && p.occasion !== selectedOccasion)
         return false
       return true
@@ -113,7 +114,8 @@ function AdminProductsContent() {
       sku: "",
       category_id: "",
       collection_id: "",
-      fabric: "Pure Silk",
+      fabric_material_id: "",
+      fabric: "",
       color: "Royal Magenta",
       occasion: "Wedding",
       price: 8999,
@@ -193,9 +195,9 @@ function AdminProductsContent() {
             className="text-xs px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none cursor-pointer min-h-[42px]"
           >
             <option value="all">All Fabrics</option>
-            {SAREE_FABRICS.map((f) => (
-              <option key={f} value={f}>
-                {f}
+            {fabricMaterials.filter(f => f.is_active).map((f) => (
+              <option key={f.id} value={f.name}>
+                {f.name}
               </option>
             ))}
           </select>
@@ -603,15 +605,21 @@ function AdminProductsContent() {
                     Fabric
                   </label>
                   <select
-                    value={newSaree.fabric}
-                    onChange={(e) =>
-                      setNewSaree({ ...newSaree, fabric: e.target.value })
-                    }
+                    value={newSaree.fabric_material_id}
+                    onChange={(e) => {
+                      const selectedFabric = fabricMaterials.find(f => f.id === e.target.value)
+                      setNewSaree({ 
+                        ...newSaree, 
+                        fabric_material_id: e.target.value,
+                        fabric: selectedFabric ? selectedFabric.name : "" 
+                      })
+                    }}
                     className="w-full p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
                   >
-                    {SAREE_FABRICS.map((f) => (
-                      <option key={f} value={f}>
-                        {f}
+                    <option value="">-- No Fabric --</option>
+                    {fabricMaterials.filter(f => f.is_active).map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
                       </option>
                     ))}
                   </select>
@@ -743,6 +751,7 @@ function AdminProductsContent() {
           product={editingProduct}
           categories={categories}
           collections={collections}
+          fabricMaterials={fabricMaterials}
           onClose={() => setEditingProduct(null)}
           onSave={async (updates) => {
             await updateProduct(editingProduct.id, updates)
@@ -758,12 +767,14 @@ function EditProductModal({
   product,
   categories,
   collections,
+  fabricMaterials,
   onClose,
   onSave,
 }: {
   product: ProductWithDetails
   categories: any[]
   collections: any[]
+  fabricMaterials: FabricMaterial[]
   onClose: () => void
   onSave: (updates: any) => Promise<void>
 }) {
@@ -777,7 +788,8 @@ function EditProductModal({
     sku: product.sku || "",
     category_id: product.category_id || "",
     collection_id: product.collection_id || "",
-    fabric: product.fabric || "Pure Silk",
+    fabric_material_id: product.fabric_material_id || "",
+    fabric: product.fabric || "",
     color: product.color || "Royal Magenta",
     occasion: product.occasion || "Wedding",
     price: product.price || 0,
@@ -939,13 +951,21 @@ function EditProductModal({
                 Fabric
               </label>
               <select
-                value={form.fabric}
-                onChange={(e) => setForm({ ...form, fabric: e.target.value })}
+                value={form.fabric_material_id}
+                onChange={(e) => {
+                  const selectedFabric = fabricMaterials.find(f => f.id === e.target.value)
+                  setForm({ 
+                    ...form, 
+                    fabric_material_id: e.target.value,
+                    fabric: selectedFabric ? selectedFabric.name : "" 
+                  })
+                }}
                 className="w-full p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
               >
-                {SAREE_FABRICS.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
+                <option value="">-- No Fabric --</option>
+                {fabricMaterials.filter(f => f.is_active).map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.name}
                   </option>
                 ))}
               </select>
