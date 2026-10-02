@@ -50,6 +50,28 @@ export default function AdminBannersPage() {
     updateBanner(bannerId, { display_order: targetOrder })
   }
 
+  const getSafeImageUrl = (url?: string | null, fallback: string = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"): string => {
+    if (!url || typeof url !== "string") return fallback
+    let clean = url.trim()
+    if (
+      clean.includes("{") || 
+      clean.includes("}") || 
+      clean.includes('"updated') || 
+      clean.includes('%22updated') || 
+      clean.includes('%7B') ||
+      clean.match(/%22id%22/i)
+    ) {
+      return fallback
+    }
+    if (clean.startsWith('"') && clean.endsWith('"')) {
+      clean = clean.slice(1, -1)
+    }
+    if (!clean.startsWith("http://") && !clean.startsWith("https://") && !clean.startsWith("/")) {
+      return fallback
+    }
+    return clean
+  }
+
   return (
     <div className="space-y-6">
       {/* Title & Add Banner CTA */}
@@ -82,9 +104,13 @@ export default function AdminBannersPage() {
             {/* Visual Banner Preview */}
             <div className="aspect-[16/9] bg-[#FAF7F2] relative overflow-hidden">
               <img
-                src={banner.image_url}
+                src={getSafeImageUrl(banner.image_url)}
                 alt={banner.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.currentTarget.onerror = null
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 flex flex-col justify-end text-white">
                 <span className="text-[10px] uppercase font-bold tracking-widest text-[#D4AF37]">
