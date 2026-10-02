@@ -9,62 +9,48 @@ export interface UploadResult {
 }
 
 /**
- * Uploads an image file to the designated Supabase Storage bucket.
- * Generates a sanitized, timestamped filename (alphanumeric + hyphens only)
- * and returns the public CDN URL. Throws a descriptive error on failure
- * so the UI can show it to the user rather than silently saving a broken URL.
+ * Uploads an image file via the server-side /api/upload route.
+ * The server uses the Supabase service role key which bypasses RLS entirely.
+ * This is the safest approach — no client-side RLS policy issues possible.
  */
 export async function uploadImageToStorage(
   file: File,
   bucket: StorageBucket = "product-images",
   prefix: string = "upload"
 ): Promise<UploadResult> {
-  const supabase = createClient()
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Only image files are allowed (JPG, PNG, WEBP).")
+  }
 
-  // Sanitize filename: lowercase, alphanumeric+hyphens only, no leading/trailing/double hyphens
-  const ext = file.name.split(".").pop()?.toLowerCase()?.replace(/[^a-z0-9]/g, "") || "jpg"
-  const cleanName = file.name
-    .replace(/\.[^/.]+$/, "")     // remove extension
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-") // replace non-alphanumeric with hyphens
-    .replace(/^-+|-+$/g, "")     // trim leading/trailing hyphens
-    .replace(/-{2,}/g, "-")      // collapse consecutive hyphens
-    .slice(0, 40)                 // limit length
-    .replace(/^-+|-+$/g, "")     // trim again after slice
-    || "image"                    // fallback if name becomes empty
+  if (file.size > 15 * 1024 * 1024) {
+    throw new Error("File size exceeds 15MB limit.")
+  }
 
-  const timestamp = Date.now()
-  const filePath = `${prefix}-${cleanName}-${timestamp}.${ext}`
+  const formData = new FormData()
+  formData.append("file", file)
+  formData.append("bucket", bucket)
+  formData.append("prefix", prefix)
 
-  try {
-    const { data, error } = await supabase.storage.from(bucket).upload(filePath, file, {
-      contentType: file.type || "image/jpeg",
-      upsert: true,
-    })
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  })
 
-    if (error) {
-      console.error(`Supabase storage upload error in '${bucket}':`, error)
-      throw new Error(`Upload failed: ${error.message}. Please try again or use a different image file.`)
-    }
+  const data = await res.json()
 
-    if (data) {
-      const { data: pubData } = supabase.storage.from(bucket).getPublicUrl(data.path)
-      return {
-        url: pubData.publicUrl,
-        path: data.path,
-        error: null,
-      }
-    }
+  if (!res.ok || data.error) {
+    throw new Error(data.error || "Upload failed. Please try again.")
+  }
 
-    throw new Error("Upload succeeded but no data returned. Please retry.")
-  } catch (err: any) {
-    // Re-throw so the UI catches and shows the error to the user
-    throw new Error(err?.message || "Failed to upload image. Please try again.")
+  return {
+    url: data.url,
+    path: data.path,
+    error: null,
   }
 }
 
 /**
- * Helper to convert File to base64 data URL
+ * Helper to convert File to base64 data URL (kept for potential use elsewhere)
  */
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -74,3 +60,4 @@ export function fileToBase64(file: File): Promise<string> {
     reader.onerror = (error) => reject(error)
   })
 }
+
