@@ -26,6 +26,7 @@ import {
   SAREE_OCCASIONS,
   SAREE_COLOR_PALETTES,
   ProductWithDetails,
+  FabricMaterial,
 } from "@/types/admin"
 import { AdminImageUpload } from "@/components/admin/AdminImageUpload"
 

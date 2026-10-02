@@ -157,6 +157,7 @@ export interface Database {
           price: number
           mrp: number
           discount: number
+          fabric_material_id: string | null
           fabric: string | null
           color: string | null
           occasion: string | null
@@ -180,6 +181,7 @@ export interface Database {
           price: number
           mrp: number
           discount?: number
+          fabric_material_id?: string | null
           fabric?: string | null
           color?: string | null
           occasion?: string | null
@@ -203,6 +205,7 @@ export interface Database {
           price?: number
           mrp?: number
           discount?: number
+          fabric_material_id?: string | null
           fabric?: string | null
           color?: string | null
           occasion?: string | null
