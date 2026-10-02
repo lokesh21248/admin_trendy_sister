@@ -51,6 +51,21 @@ export default function AdminCategoriesPage() {
     is_active: true,
   })
 
+  const getSafeImageUrl = (url?: string | null, fallback: string = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"): string => {
+    if (!url || typeof url !== "string") return fallback
+    let clean = url.trim()
+    if (clean.startsWith('"') && clean.endsWith('"')) {
+      clean = clean.slice(1, -1)
+    }
+    if (clean.includes('"updated') || clean.includes('updated at') || clean.includes('%22updated')) {
+      return fallback
+    }
+    if (!clean.startsWith("http://") && !clean.startsWith("https://") && !clean.startsWith("/")) {
+      return fallback
+    }
+    return clean
+  }
+
   const handleCreateCategory = (e: React.FormEvent) => {
     e.preventDefault()
     if (!catForm.name.trim()) return
@@ -84,7 +99,7 @@ export default function AdminCategoriesPage() {
           {activeTab === "categories" ? (
             <button
               onClick={() => setIsAddCatOpen(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
+              className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Add Saree Category</span>
@@ -92,7 +107,7 @@ export default function AdminCategoriesPage() {
           ) : (
             <button
               onClick={() => setIsAddColOpen(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] text-[#181214] text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
+              className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] text-[#181214] text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Add Curated Edit</span>
@@ -105,7 +120,7 @@ export default function AdminCategoriesPage() {
       <div className="flex items-center gap-2 border-b border-[#E8DCC8] pb-1 overflow-x-auto">
         <button
           onClick={() => setActiveTab("categories")}
-          className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap min-h-[44px] ${
             activeTab === "categories"
               ? "border-[#651F35] text-[#651F35]"
               : "border-transparent text-[#6B5E51] hover:text-[#25201D]"
@@ -117,7 +132,7 @@ export default function AdminCategoriesPage() {
 
         <button
           onClick={() => setActiveTab("collections")}
-          className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap min-h-[44px] ${
             activeTab === "collections"
               ? "border-[#D4AF37] text-[#8B6E32]"
               : "border-transparent text-[#6B5E51] hover:text-[#25201D]"
@@ -139,9 +154,13 @@ export default function AdminCategoriesPage() {
               <div className="aspect-[16/9] bg-[#FAF7F2] overflow-hidden relative border-b border-[#E8DCC8]">
                 {cat.image_url ? (
                   <img
-                    src={cat.image_url}
+                    src={getSafeImageUrl(cat.image_url)}
                     alt={cat.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[#8C8074]">
@@ -229,9 +248,13 @@ export default function AdminCategoriesPage() {
               <div className="aspect-[16/9] bg-[#FAF7F2] overflow-hidden relative border-b border-[#E8DCC8]">
                 {col.image_url ? (
                   <img
-                    src={col.image_url}
+                    src={getSafeImageUrl(col.image_url)}
                     alt={col.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[#8C8074]">
