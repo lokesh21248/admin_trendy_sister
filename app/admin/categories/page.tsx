@@ -54,12 +54,23 @@ export default function AdminCategoriesPage() {
   const getSafeImageUrl = (url?: string | null, fallback: string = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80"): string => {
     if (!url || typeof url !== "string") return fallback
     let clean = url.trim()
+    
+    // If it looks like JSON or contains URL-encoded JSON artifacts, it's broken
+    if (
+      clean.includes("{") || 
+      clean.includes("}") || 
+      clean.includes('"updated') || 
+      clean.includes('%22updated') || 
+      clean.includes('%7B') || // URL-encoded '{'
+      clean.match(/%22id%22/i)
+    ) {
+      return fallback
+    }
+
     if (clean.startsWith('"') && clean.endsWith('"')) {
       clean = clean.slice(1, -1)
     }
-    if (clean.includes('"updated') || clean.includes('updated at') || clean.includes('%22updated')) {
-      return fallback
-    }
+    
     if (!clean.startsWith("http://") && !clean.startsWith("https://") && !clean.startsWith("/")) {
       return fallback
     }
