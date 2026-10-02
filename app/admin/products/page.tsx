@@ -137,19 +137,19 @@ function AdminProductsContent() {
   return (
     <div className="space-y-6">
       {/* Header & Add Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-[#25201D]">
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">
             Saree Catalog & Inventory
           </h2>
-          <p className="text-xs text-[#6B5E51] mt-1">
+          <p className="text-[11px] sm:text-xs text-[#6B5E51] mt-1">
             Manage product listings, SKU stock levels, visibility switches, and direct QC audit triggers.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] hover:from-[#501829] hover:to-[#722338] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] hover:from-[#501829] hover:to-[#722338] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer w-full sm:w-auto min-h-[44px]"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Saree</span>
@@ -157,7 +157,7 @@ function AdminProductsContent() {
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="bg-white rounded-2xl p-4 border border-[#E8DCC8] shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-[#E8DCC8] shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Search */}
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-[#8C8074] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -166,17 +166,17 @@ function AdminProductsContent() {
             placeholder="Search by saree title, SKU (e.g. TS-KANJ-001)..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+            className="w-full text-xs pl-9 pr-3 py-2 sm:py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#D4AF37] min-h-[42px]"
           />
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full md:w-auto">
           {/* Category Filter */}
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="text-xs px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+            className="text-xs px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none cursor-pointer min-h-[42px]"
           >
             <option value="all">All Categories</option>
             {categories.map((c) => (
@@ -190,7 +190,7 @@ function AdminProductsContent() {
           <select
             value={selectedFabric}
             onChange={(e) => setSelectedFabric(e.target.value)}
-            className="text-xs px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+            className="text-xs px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none cursor-pointer min-h-[42px]"
           >
             <option value="all">All Fabrics</option>
             {SAREE_FABRICS.map((f) => (
@@ -204,7 +204,7 @@ function AdminProductsContent() {
           <select
             value={selectedOccasion}
             onChange={(e) => setSelectedOccasion(e.target.value)}
-            className="text-xs px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+            className="text-xs px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] focus:ring-1 focus:ring-[#D4AF37] focus:outline-none cursor-pointer min-h-[42px]"
           >
             <option value="all">All Occasions</option>
             {SAREE_OCCASIONS.map((occ) => (
@@ -216,10 +216,10 @@ function AdminProductsContent() {
         </div>
       </div>
 
-      {/* Catalog Table */}
-      <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#25201D]">
+      {/* Catalog Table - Desktop & Laptop */}
+      <div className="hidden md:block bg-white rounded-2xl border border-[#E8DCC8] shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full min-w-[880px] text-left text-xs text-[#25201D]">
             <thead className="text-[11px] uppercase tracking-wider text-[#8B6E32] bg-[#FAF7F2] border-b border-[#E8DCC8]">
               <tr>
                 <th className="py-3 px-4">Saree & Visual</th>
@@ -415,28 +415,143 @@ function AdminProductsContent() {
         </div>
       </div>
 
+      {/* Mobile Catalog Card View (md:hidden) */}
+      <div className="md:hidden space-y-3">
+        {filteredProducts.map((p) => {
+          const primaryImg =
+            p.product_images?.find((img) => img.is_primary)?.image_url ||
+            p.product_images?.[0]?.image_url ||
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=200&q=80"
+          const score = p.completeness?.score || 0
+          const is100 = score === 100
+
+          return (
+            <div
+              key={p.id}
+              className="bg-white rounded-2xl border border-[#E8DCC8] p-3.5 shadow-2xs space-y-3"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-16 h-20 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-[#E8DCC8] relative shadow-2xs">
+                  <img
+                    src={primaryImg}
+                    alt={p.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute bottom-0 inset-x-0 bg-black/65 text-white text-[8px] text-center font-bold py-0.5">
+                    {p.product_images?.length || 0} pics
+                  </span>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-1.5">
+                    <h4 className="font-serif font-bold text-xs text-[#25201D] truncate">
+                      {p.name}
+                    </h4>
+                    <span
+                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
+                        is100
+                          ? "bg-emerald-100 text-emerald-800"
+                          : score >= 70
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-rose-100 text-rose-800"
+                      }`}
+                    >
+                      {score}% QC
+                    </span>
+                  </div>
+
+                  <div className="text-[10px] font-mono text-[#8C8074] mt-0.5">
+                    {p.sku || "NO SKU"}
+                  </div>
+
+                  <div className="text-[11px] text-[#6B5E51] mt-1">
+                    <span>{p.fabric || "No Fabric"}</span> · <span>{p.color || "No Color"}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="font-serif font-bold text-xs text-[#651F35]">
+                      ₹{p.price?.toLocaleString("en-IN")}
+                    </span>
+                    <span className="text-[10px] text-[#8C8074] line-through">
+                      ₹{p.mrp?.toLocaleString("en-IN")}
+                    </span>
+                    <span className="text-[10px] text-[#6B5E51] font-semibold">
+                      Stock: {p.stock}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Bar */}
+              <div className="flex items-center justify-between pt-2 border-t border-[#F0E6D8]">
+                <button
+                  type="button"
+                  onClick={() => handleToggleActive(p)}
+                  className={`px-3 py-1.5 rounded-xl text-[10px] font-bold cursor-pointer transition-colors min-h-[36px] inline-flex items-center ${
+                    p.is_active
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-300"
+                      : "bg-gray-100 text-gray-600 border border-gray-300"
+                  }`}
+                >
+                  {p.is_active ? "● Active in Store" : "Hidden"}
+                </button>
+
+                <div className="flex items-center gap-1.5">
+                  <Link
+                    href={`/admin/design-checker?id=${p.id}`}
+                    onClick={() => setSelectedAuditProductId(p.id)}
+                    className="px-2.5 py-1.5 rounded-xl text-[10px] font-semibold bg-[#651F35]/10 text-[#651F35] hover:bg-[#651F35]/15 inline-flex items-center gap-1 min-h-[36px]"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Audit</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct(p)}
+                    className="w-9 h-9 rounded-xl text-amber-700 bg-amber-50 hover:bg-amber-100 cursor-pointer flex items-center justify-center"
+                    title="Edit Saree"
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => deleteProduct(p.id)}
+                    className="w-9 h-9 rounded-xl text-rose-600 bg-rose-50 hover:bg-rose-100 cursor-pointer flex items-center justify-center"
+                    title="Delete Saree"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
       {/* Add New Saree Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full border border-[#D4AF37]/40 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full border border-[#D4AF37]/40 shadow-2xl overflow-hidden max-h-[90vh] sm:max-h-[88vh] flex flex-col">
             {/* Modal Header */}
-            <div className="p-6 bg-gradient-to-r from-[#181214] to-[#381622] text-white flex items-center justify-between border-b border-[#D4AF37]/30">
+            <div className="p-4 sm:p-6 bg-gradient-to-r from-[#181214] to-[#381622] text-white flex items-center justify-between border-b border-[#D4AF37]/30">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-[#D4AF37] text-[#181214]">
                   <Plus className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-lg font-bold">
+                  <h3 className="font-serif text-base sm:text-lg font-bold">
                     Add New Haute Couture Saree
                   </h3>
-                  <p className="text-xs text-[#D8CFBC]">
+                  <p className="text-[11px] sm:text-xs text-[#D8CFBC]">
                     Create a new saree listing with full design attributes
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-[#D8CFBC] hover:text-white p-1 rounded-lg hover:bg-white/10"
+                className="text-[#D8CFBC] hover:text-white p-1 rounded-lg hover:bg-white/10 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -445,7 +560,7 @@ function AdminProductsContent() {
             {/* Modal Body */}
             <form
               onSubmit={handleCreateSubmit}
-              className="p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1 text-xs"
+              className="p-4 sm:p-6 overflow-y-auto space-y-3.5 sm:space-y-4 custom-scrollbar flex-1 text-xs"
             >
               {/* Name & SKU */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -702,24 +817,24 @@ function EditProductModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl max-w-3xl w-full border border-[#D4AF37]/40 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-white rounded-3xl max-w-3xl w-full border border-[#D4AF37]/40 shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[88vh] flex flex-col">
         {/* Modal Header */}
-        <div className="p-5 bg-gradient-to-r from-[#181214] via-[#2A151E] to-[#651F35] text-white flex items-center justify-between border-b border-[#D4AF37]/30">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-[#D4AF37] text-[#181214]">
-              <Edit className="w-5 h-5" />
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-[#181214] via-[#2A151E] to-[#651F35] text-white flex items-center justify-between border-b border-[#D4AF37]/30">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-[#D4AF37] text-[#181214] shrink-0">
+              <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="font-serif text-lg font-bold text-[#FFF9EF]">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-[#FFF9EF] truncate">
                   Edit Saree Product
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/15 text-[#D4AF37]">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/15 text-[#D4AF37] shrink-0">
                   {form.sku || "NO SKU"}
                 </span>
               </div>
-              <p className="text-xs text-[#D8CFBC] mt-0.5">
+              <p className="text-[11px] sm:text-xs text-[#D8CFBC] mt-0.5 truncate max-w-[280px] sm:max-w-md">
                 Update saree specifications, pricing, inventory stock, and high-res image angles.
               </p>
             </div>
@@ -727,7 +842,7 @@ function EditProductModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-[#D8CFBC] hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition-colors"
+            className="text-[#D8CFBC] hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -736,7 +851,7 @@ function EditProductModal({
         {/* Modal Body */}
         <form
           onSubmit={handleSubmit}
-          className="p-6 overflow-y-auto space-y-5 custom-scrollbar flex-1 text-xs"
+          className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 custom-scrollbar flex-1 text-xs"
         >
           {/* Saree Title & Slug */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

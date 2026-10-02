@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAdmin } from "@/contexts/AdminContext"
@@ -29,6 +29,42 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
   const pathname = usePathname()
   const { stats, isSupabaseLive, coupons } = useAdmin()
   const [collapsed, setCollapsed] = useState(false)
+
+  // Prevent background body scrolling when mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = "hidden"
+      return () => {
+        document.body.style.overflow = originalOverflow
+      }
+    }
+  }, [mobileOpen])
+
+  // Remember collapse preference on desktop/laptop
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("ts_admin_sidebar_collapsed")
+      if (saved !== null) {
+        setCollapsed(saved === "true")
+      } else if (typeof window !== "undefined" && window.innerWidth >= 768 && window.innerWidth < 1200) {
+        // Auto-collapse on medium/smaller laptops to prioritize wide data view
+        setCollapsed(true)
+      }
+    } catch {
+      // LocalStorage fallback
+    }
+  }, [])
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem("ts_admin_sidebar_collapsed", String(next))
+      } catch {}
+      return next
+    })
+  }
 
   const navItems = [
     {
@@ -89,10 +125,10 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
   const sidebarContent = (
     <div className="flex flex-col h-full bg-[#181214] text-[#FAF7F2] border-r border-[#302127] select-none">
       {/* Brand Header */}
-      <div className="p-5 border-b border-[#302127] flex items-center justify-between">
+      <div className="p-4 sm:p-5 border-b border-[#302127] flex items-center justify-between min-h-[64px]">
         <Link
           href="/admin"
-          className="flex items-center gap-3.5 group overflow-hidden"
+          className="flex items-center gap-3 group overflow-hidden"
           onClick={() => setMobileOpen(false)}
         >
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37] via-[#B88A3B] to-[#651F35] p-0.5 shadow-md flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
@@ -114,10 +150,10 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
           )}
         </Link>
 
-        {/* Mobile close button */}
+        {/* Mobile close button with 44px minimum touch target */}
         <button
           onClick={() => setMobileOpen(false)}
-          className="md:hidden text-[#A89F91] hover:text-white p-1 rounded-lg"
+          className="md:hidden text-[#A89F91] hover:text-white w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
           aria-label="Close sidebar"
         >
           <X className="w-5 h-5" />
@@ -125,14 +161,14 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
       </div>
 
       {/* Quick View Storefront Link */}
-      <div className="px-4 py-3 border-b border-[#281b21]">
+      <div className="px-3.5 sm:px-4 py-3 border-b border-[#281b21]">
         <a
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gradient-to-r from-[#651F35]/40 to-[#2A1720] hover:from-[#651F35]/70 hover:to-[#381D2A] border border-[#D4AF37]/30 text-xs text-[#E8DCC8] hover:text-white transition-all duration-200 group"
+          className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#651F35]/40 to-[#2A1720] hover:from-[#651F35]/70 hover:to-[#381D2A] border border-[#D4AF37]/30 text-xs text-[#E8DCC8] hover:text-white transition-all duration-200 group"
         >
-          <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 group-hover:rotate-12 transition-transform" />
+          <Sparkles className="w-4 h-4 text-[#D4AF37] shrink-0 group-hover:rotate-12 transition-transform" />
           {!collapsed && (
             <span className="flex-1 font-medium truncate">View Live Storefront</span>
           )}
@@ -141,7 +177,7 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1.5 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto py-3 sm:py-4 px-3 space-y-1.5 custom-scrollbar">
         {navItems.map((item) => {
           const isActive =
             item.href === "/admin"
@@ -154,7 +190,7 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
               key={item.href}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 relative group ${
+              className={`min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 relative group ${
                 isActive
                   ? item.isStar
                     ? "bg-gradient-to-r from-[#651F35] to-[#451322] text-white shadow-lg shadow-[#651F35]/25 border border-[#D4AF37]/50"
@@ -166,7 +202,7 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
               title={collapsed ? item.label : undefined}
             >
               <div
-                className={`p-1 rounded-lg shrink-0 transition-colors ${
+                className={`p-1.5 rounded-lg shrink-0 transition-colors ${
                   isActive
                     ? item.isStar
                       ? "bg-[#D4AF37] text-[#181214]"
@@ -210,9 +246,9 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
       </nav>
 
       {/* Bottom Status & Info */}
-      <div className="p-4 border-t border-[#302127] space-y-3">
+      <div className="p-3.5 sm:p-4 border-t border-[#302127] space-y-2.5 sm:space-y-3">
         {/* Database Status */}
-        <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#20151A] border border-[#33222A]">
+        <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#20151A] border border-[#33222A]">
           <span className="relative flex h-2 w-2">
             <span
               className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
@@ -229,7 +265,7 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
           {!collapsed && (
             <div className="flex flex-col min-w-0">
               <span className="text-[11px] font-medium text-[#FAF7F2] truncate">
-                {isSupabaseLive ? "Supabase Live Connected" : "Local Sync Active"}
+                {isSupabaseLive ? "Supabase Live" : "Local Sync Active"}
               </span>
               <span className="text-[9px] text-[#A89F91]">
                 PostgreSQL · Real-time
@@ -260,8 +296,8 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
 
           {/* Desktop Collapse Toggle */}
           <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="hidden md:flex text-[#A89F91] hover:text-[#FAF7F2] p-1.5 rounded-lg hover:bg-[#25171E] transition-colors"
+            onClick={toggleCollapsed}
+            className="hidden md:flex text-[#A89F91] hover:text-[#FAF7F2] p-2 rounded-lg hover:bg-[#25171E] transition-colors cursor-pointer"
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? (
@@ -277,29 +313,33 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
 
   return (
     <>
-      {/* Desktop Sidebar */}
+      {/* Desktop & Laptop Sidebar */}
       <aside
         className={`hidden md:block shrink-0 transition-all duration-300 ease-in-out h-screen sticky top-0 z-30 ${
-          collapsed ? "w-20" : "w-64"
+          collapsed ? "w-18 md:w-20" : "w-60 lg:w-64"
         }`}
       >
         {sidebarContent}
       </aside>
 
-      {/* Mobile Backdrop & Drawer */}
+      {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity"
+          className="fixed inset-0 bg-black/65 backdrop-blur-sm z-40 md:hidden transition-opacity"
           onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
         />
       )}
-      <div
-        className={`fixed top-0 bottom-0 left-0 w-72 z-50 md:hidden transition-transform duration-300 ease-in-out shadow-2xl ${
+
+      {/* Mobile Off-Canvas Drawer */}
+      <aside
+        className={`fixed inset-y-0 left-0 w-[280px] xs:w-72 max-w-[85vw] h-[100dvh] z-50 md:hidden transition-transform duration-300 ease-in-out shadow-2xl overscroll-contain flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
+        aria-label="Mobile navigation"
       >
         {sidebarContent}
-      </div>
+      </aside>
     </>
   )
 }

@@ -228,33 +228,33 @@ function DesignCheckerContent() {
   return (
     <div className="space-y-6">
       {/* Page Title & Mission */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-[#651F35] to-[#D4AF37] text-white shadow-md">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-[#651F35] to-[#D4AF37] text-white shadow-md shrink-0">
               <ShieldCheck className="w-5 h-5 text-[#FAF7F2]" />
             </div>
-            <h2 className="font-serif text-2xl font-bold text-[#25201D]">
-              Design Field Checker & Quality Control
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">
+              Design Field Checker & QC
             </h2>
           </div>
-          <p className="text-xs text-[#6B5E51] mt-1">
+          <p className="text-[11px] sm:text-xs text-[#6B5E51] mt-1">
             Audit saree design attributes, high-resolution angle coverage, and live customer drape simulation.
           </p>
         </div>
 
         {/* Global Catalog Health Gauge */}
-        <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-[#E8DCC8] shadow-xs">
-          <div className="flex flex-col text-right">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8B6E32]">
-              Saree Design QC Status
+        <div className="flex items-center gap-3 bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#E8DCC8] shadow-2xs self-start sm:self-auto">
+          <div className="flex flex-col text-left sm:text-right">
+            <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-[#8B6E32]">
+              Saree Design QC
             </span>
             <span className="text-xs font-bold text-[#25201D]">
               {products.filter((p) => p.completeness?.score === 100).length} of{" "}
-              {products.length} ready for publish
+              {products.length} ready
             </span>
           </div>
-          <div className="w-10 h-10 rounded-full border-2 border-[#D4AF37] flex items-center justify-center font-serif text-xs font-bold text-[#651F35] bg-[#FAF7F2]">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#D4AF37] flex items-center justify-center font-serif text-xs font-bold text-[#651F35] bg-[#FAF7F2] shrink-0">
             {score}%
           </div>
         </div>
@@ -284,14 +284,14 @@ function DesignCheckerContent() {
           </div>
 
           {/* Saree Search Input */}
-          <div className="relative min-w-[240px]">
+          <div className="relative w-full md:w-64 md:min-w-[220px]">
             <Search className="w-4 h-4 text-[#8C8074] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search by saree name, SKU..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-9 pr-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+              className="w-full text-xs pl-9 pr-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E8DCC8] text-[#25201D] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#D4AF37] min-h-[40px]"
             />
           </div>
         </div>
@@ -391,9 +391,9 @@ function DesignCheckerContent() {
               </div>
 
               {/* Completeness Score Gauge + Save CTA */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full lg:w-auto">
                 <div className="flex items-center gap-3">
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8B6E32]">
                       Design Completeness
                     </span>
@@ -402,7 +402,7 @@ function DesignCheckerContent() {
                     </div>
                   </div>
                   <div
-                    className={`w-12 h-12 rounded-full border-4 flex items-center justify-center text-xs font-bold ${
+                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full border-4 flex items-center justify-center text-xs font-bold shrink-0 ${
                       is100
                         ? "border-emerald-500 text-emerald-700 bg-emerald-50"
                         : score >= 70
@@ -411,7 +411,7 @@ function DesignCheckerContent() {
                     }`}
                   >
                     {is100 ? (
-                      <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+                      <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
                     ) : (
                       `${score}%`
                     )}
@@ -420,7 +420,7 @@ function DesignCheckerContent() {
 
                 <button
                   onClick={handleSaveAttributes}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] hover:from-[#501829] hover:to-[#722338] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+                  className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] hover:from-[#501829] hover:to-[#722338] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer text-center"
                 >
                   Save Design Attributes
                 </button>
@@ -428,12 +428,12 @@ function DesignCheckerContent() {
             </div>
 
             {/* 6 Criteria Status Checklist Pills */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-3 border-t border-[#F0E6D8]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-2.5 pt-3 border-t border-[#F0E6D8]">
               {completeness && (
                 <>
                   {/* Criterion 1: Fabric */}
                   <div
-                    className={`p-2.5 rounded-xl border flex items-center gap-2 ${
+                    className={`p-2 sm:p-2.5 rounded-xl border flex items-center gap-2 ${
                       completeness.criteria.fabric.passed
                         ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
                         : "bg-amber-50/80 border-amber-200 text-amber-900"
@@ -445,7 +445,7 @@ function DesignCheckerContent() {
                       <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                      <div className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                         Fabric (+20%)
                       </div>
                       <div className="text-xs font-bold truncate">
@@ -456,7 +456,7 @@ function DesignCheckerContent() {
 
                   {/* Criterion 2: Color */}
                   <div
-                    className={`p-2.5 rounded-xl border flex items-center gap-2 ${
+                    className={`p-2 sm:p-2.5 rounded-xl border flex items-center gap-2 ${
                       completeness.criteria.color.passed
                         ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
                         : "bg-amber-50/80 border-amber-200 text-amber-900"
@@ -468,7 +468,7 @@ function DesignCheckerContent() {
                       <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                      <div className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                         Color (+20%)
                       </div>
                       <div className="text-xs font-bold truncate">
@@ -479,7 +479,7 @@ function DesignCheckerContent() {
 
                   {/* Criterion 3: Occasion */}
                   <div
-                    className={`p-2.5 rounded-xl border flex items-center gap-2 ${
+                    className={`p-2 sm:p-2.5 rounded-xl border flex items-center gap-2 ${
                       completeness.criteria.occasion.passed
                         ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
                         : "bg-amber-50/80 border-amber-200 text-amber-900"
@@ -491,7 +491,7 @@ function DesignCheckerContent() {
                       <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                      <div className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                         Occasion (+20%)
                       </div>
                       <div className="text-xs font-bold truncate">
@@ -502,7 +502,7 @@ function DesignCheckerContent() {
 
                   {/* Criterion 4: Gallery */}
                   <div
-                    className={`p-2.5 rounded-xl border flex items-center gap-2 ${
+                    className={`p-2 sm:p-2.5 rounded-xl border flex items-center gap-2 ${
                       completeness.criteria.images.passed
                         ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
                         : "bg-rose-50/80 border-rose-200 text-rose-900"
@@ -514,7 +514,7 @@ function DesignCheckerContent() {
                       <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                      <div className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                         Gallery (+20%)
                       </div>
                       <div className="text-xs font-bold truncate">
@@ -525,7 +525,7 @@ function DesignCheckerContent() {
 
                   {/* Criterion 5: Pricing */}
                   <div
-                    className={`p-2.5 rounded-xl border flex items-center gap-2 ${
+                    className={`p-2 sm:p-2.5 rounded-xl border flex items-center gap-2 ${
                       completeness.criteria.pricing.passed
                         ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
                         : "bg-amber-50/80 border-amber-200 text-amber-900"
@@ -537,7 +537,7 @@ function DesignCheckerContent() {
                       <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                      <div className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                         Pricing (+10%)
                       </div>
                       <div className="text-xs font-bold truncate">
@@ -548,7 +548,7 @@ function DesignCheckerContent() {
 
                   {/* Criterion 6: SKU & Stock */}
                   <div
-                    className={`p-2.5 rounded-xl border flex items-center gap-2 ${
+                    className={`p-2 sm:p-2.5 rounded-xl border flex items-center gap-2 ${
                       completeness.criteria.stockSku.passed
                         ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
                         : "bg-amber-50/80 border-amber-200 text-amber-900"
@@ -560,7 +560,7 @@ function DesignCheckerContent() {
                       <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                      <div className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                         SKU/Stock (+10%)
                       </div>
                       <div className="text-xs font-bold truncate">
@@ -574,7 +574,7 @@ function DesignCheckerContent() {
           </div>
 
           {/* Interactive Side-by-Side Design Inspector */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 xl:gap-8 items-start">
             {/* Left Panel: Form & Image Auditor (7 Cols) */}
             <div className="lg:col-span-7 space-y-6">
               {/* Tab Navigation for Editor */}
@@ -1127,8 +1127,8 @@ function DesignCheckerContent() {
               )}
             </div>
 
-            {/* Right Panel: Live Storefront Simulator (5 Cols) */}
-            <div className="lg:col-span-5 sticky top-20 space-y-3">
+            {/* Right Panel: Live Storefront Simulator (5 Cols on Desktop/Laptop) */}
+            <div className="lg:col-span-5 lg:sticky lg:top-20 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B6E32] uppercase tracking-wider">
                   <Eye className="w-4 h-4 text-[#D4AF37]" />
@@ -1139,8 +1139,8 @@ function DesignCheckerContent() {
                 </span>
               </div>
 
-              {/* Simulated Customer Product Card */}
-              <div className="bg-white rounded-3xl border-2 border-[#D4AF37]/40 shadow-xl overflow-hidden group">
+              {/* Simulated Customer Product Card - Beautifully proportioned on mobile and laptop */}
+              <div className="bg-white rounded-3xl border-2 border-[#D4AF37]/40 shadow-xl overflow-hidden group max-w-sm sm:max-w-md mx-auto lg:max-w-none">
                 {/* Image Stage */}
                 <div className="relative aspect-[3/4] bg-[#FAF7F2] overflow-hidden">
                   <img

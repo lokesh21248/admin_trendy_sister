@@ -28,11 +28,13 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    max-width: 100%;
     overflow-x: hidden;
   }
 
   body {
     width: 100%;
+    max-width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
     background-color: var(--ivory);
@@ -148,9 +150,9 @@ h1, h2, h3 {
   .show-desktop { display: flex !important; }
 }
 
-/* Bottom nav spacing on mobile */
+/* Bottom nav spacing on mobile (Storefront only) */
 @media (max-width: 768px) {
-  main {
+  main:not(.admin-main) {
     padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
   }
 }

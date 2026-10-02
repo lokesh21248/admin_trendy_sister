@@ -53,19 +53,19 @@ export default function AdminBannersPage() {
   return (
     <div className="space-y-6">
       {/* Title & Add Banner CTA */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-[#25201D]">
-            Hero Banners & Seasonal Campaigns
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">
+            Hero Banners & Campaigns
           </h2>
-          <p className="text-xs text-[#6B5E51] mt-1">
+          <p className="text-[11px] sm:text-xs text-[#6B5E51] mt-1">
             Manage high-impact homepage carousel sliders, seasonal saree edits, and promotional CTA links.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Slide</span>
@@ -73,7 +73,7 @@ export default function AdminBannersPage() {
       </div>
 
       {/* Banner Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {banners.map((banner, idx) => (
           <div
             key={banner.id}
@@ -186,9 +186,9 @@ export default function AdminBannersPage() {
 
       {/* Add Banner Modal */}
       {isAddOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full border border-[#D4AF37]/30 shadow-2xl overflow-hidden">
-            <div className="p-5 bg-[#181214] text-white flex items-center justify-between border-b border-[#302127]">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full border border-[#D4AF37]/30 shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[88vh] overflow-y-auto custom-scrollbar">
+            <div className="p-4 sm:p-5 bg-[#181214] text-white flex items-center justify-between border-b border-[#302127]">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#D4AF37]" />
                 <h3 className="font-serif text-base font-bold">
@@ -197,13 +197,13 @@ export default function AdminBannersPage() {
               </div>
               <button
                 onClick={() => setIsAddOpen(false)}
-                className="text-[#D8CFBC] hover:text-white p-1"
+                className="text-[#D8CFBC] hover:text-white p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleCreate} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 text-xs">
               <div className="space-y-1">
                 <label className="font-bold text-[#25201D] uppercase">
                   Headline Title *
@@ -334,10 +334,10 @@ function EditBannerModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl max-w-lg w-full border border-[#D4AF37]/30 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-white rounded-3xl max-w-lg w-full border border-[#D4AF37]/30 shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[88vh] overflow-y-auto custom-scrollbar">
         {/* Modal Header */}
-        <div className="p-5 bg-gradient-to-r from-[#181214] via-[#2A151E] to-[#651F35] text-white flex items-center justify-between border-b border-[#D4AF37]/30">
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-[#181214] via-[#2A151E] to-[#651F35] text-white flex items-center justify-between border-b border-[#D4AF37]/30">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-[#D4AF37] text-[#181214]">
               <Edit className="w-4 h-4" />
@@ -361,7 +361,7 @@ function EditBannerModal({
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 text-xs">
           <div className="space-y-1">
             <label className="font-bold text-[#25201D] uppercase tracking-wider text-[11px]">
               Headline Title *

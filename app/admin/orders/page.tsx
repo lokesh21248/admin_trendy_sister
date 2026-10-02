@@ -286,73 +286,73 @@ export default function AdminOrdersPage() {
   return (
     <div className="space-y-6">
       {/* Title & Live Status Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="font-serif text-2xl font-bold text-[#25201D]">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">
               Order Fulfillment & Logistics
             </h2>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[11px] font-bold">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] sm:text-[11px] font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Live Database Sync</span>
+              <span>Live Sync</span>
             </div>
           </div>
-          <p className="text-xs text-[#6B5E51]">
+          <p className="text-[11px] sm:text-xs text-[#6B5E51]">
             Real-time customer order queue, shipment dispatch tracking, and address reconciliations.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
           <button
             onClick={handleManualRefresh}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white border border-[#E8DCC8] hover:border-[#D4AF37] text-xs font-semibold text-[#651F35] shadow-xs transition-all cursor-pointer"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2.5 rounded-xl bg-white border border-[#E8DCC8] hover:border-[#D4AF37] text-xs font-semibold text-[#651F35] shadow-2xs transition-all cursor-pointer"
             title="Fetch latest customer orders from database"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#D4AF37]" : ""}`} />
-            <span>{isRefreshing ? "Syncing..." : "Refresh Orders"}</span>
+            <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
           </button>
 
           <button
             onClick={() => setIsBookModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all hover:scale-[1.02] cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Book Customer Order</span>
+            <span>Book Order</span>
           </button>
 
-          <div className="bg-white px-3.5 py-2.5 rounded-xl border border-[#E8DCC8] shadow-xs text-xs font-semibold text-[#651F35]">
-            <span>{orders.length} Total Orders</span>
+          <div className="bg-white px-3 py-2 sm:py-2.5 rounded-xl border border-[#E8DCC8] shadow-2xs text-xs font-semibold text-[#651F35] shrink-0 hidden xs:inline-flex">
+            <span>{orders.length} Orders</span>
           </div>
         </div>
       </div>
 
       {/* PENDING ORDERS ALERT BANNER */}
       {orders.filter((o) => o.status === "pending").length > 0 && (
-        <div className="rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-white border-2 border-amber-400 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
-              <Clock className="w-5 h-5 animate-pulse" />
+        <div className="rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-white border-2 border-amber-400 p-3.5 sm:p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h4 className="font-serif font-bold text-sm text-[#25201D]">
-                  ⚡ {orders.filter((o) => o.status === "pending").length} New Customer Order(s) Pending Acceptance
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <h4 className="font-serif font-bold text-xs sm:text-sm text-[#25201D]">
+                  ⚡ {orders.filter((o) => o.status === "pending").length} New Order(s) Pending Acceptance
                 </h4>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
                   Action Required
                 </span>
               </div>
-              <p className="text-xs text-[#6B5E51] mt-0.5">
+              <p className="text-[11px] sm:text-xs text-[#6B5E51] mt-0.5">
                 New orders booked by customers on the storefront require your confirmation before packaging.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => setStatusFilter("pending")}
-              className="px-3.5 py-2 rounded-xl bg-white border border-amber-300 text-amber-900 font-bold text-xs hover:bg-amber-50 transition-all cursor-pointer shadow-2xs"
+              className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-white border border-amber-300 text-amber-900 font-bold text-xs hover:bg-amber-50 transition-all cursor-pointer shadow-2xs text-center justify-center inline-flex items-center"
             >
               Filter Pending ({orders.filter((o) => o.status === "pending").length})
             </button>
@@ -405,10 +405,10 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#25201D]">
+      {/* Orders Table - Desktop & Laptop (Roomy, horizontal scroll with min-w-[880px]) */}
+      <div className="hidden md:block bg-white rounded-2xl border border-[#E8DCC8] shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full min-w-[880px] text-left text-xs text-[#25201D]">
             <thead className="text-[11px] uppercase tracking-wider text-[#8B6E32] bg-[#FAF7F2] border-b border-[#E8DCC8]">
               <tr>
                 <th className="py-3 px-4">Order Ref & Date</th>
@@ -617,6 +617,110 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
+      {/* Mobile Orders Card View (md:hidden) */}
+      <div className="md:hidden space-y-3">
+        {filteredOrders.map((order) => {
+          const color = statusColors[order.status] || statusColors.pending
+          const dateStr = formatOrderDate(order.created_at)
+
+          return (
+            <div
+              key={order.id}
+              className="bg-white rounded-2xl border border-[#E8DCC8] p-4 shadow-2xs space-y-3"
+            >
+              {/* Card Header: Order Number + Status + Date */}
+              <div className="flex items-center justify-between gap-2 border-b border-[#F0E6D8] pb-2.5">
+                <div>
+                  <span className="font-mono font-bold text-xs text-[#651F35]">
+                    {order.order_number}
+                  </span>
+                  <div className="flex items-center gap-1 text-[10px] text-[#8C8074] mt-0.5">
+                    <Calendar className="w-3 h-3" />
+                    <span suppressHydrationWarning>{dateStr}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  {order.status === "pending" && (
+                    <span className="px-1.5 py-0.5 rounded text-[8px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                      ⚡ ACTION
+                    </span>
+                  )}
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${color.bg} ${color.text} ${color.border}`}
+                  >
+                    {order.status.replace(/_/g, " ").toUpperCase()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Customer & Address */}
+              <div className="flex items-start justify-between gap-2 text-xs">
+                <div>
+                  <div className="font-bold text-[#25201D]">{order.customer_name}</div>
+                  <div className="text-[11px] text-[#6B5E51] flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3 h-3 text-[#B88A3B] shrink-0" />
+                    <span className="truncate max-w-[200px]">
+                      {order.address?.city || "Bengaluru"}, {order.address?.state || "Karnataka"}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-[#8C8074] mt-0.5">{order.customer_phone}</div>
+                </div>
+
+                {order.customer_phone && order.customer_phone !== "Not provided" && (
+                  <a
+                    href={`https://wa.me/${order.customer_phone.replace(/[^0-9]/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 shrink-0"
+                    title="WhatsApp Customer"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
+
+              {/* Saree Items Preview */}
+              <div className="bg-[#FAF7F2] p-2.5 rounded-xl border border-[#E8DCC8] space-y-1.5">
+                {(order.order_items || []).slice(0, 2).map((item) => (
+                  <div key={item.id} className="flex items-center justify-between text-[11px]">
+                    <span className="text-[#25201D] font-medium truncate max-w-[220px]">
+                      {item.product_name}
+                    </span>
+                    <span className="text-[#6B5E51] font-semibold shrink-0 ml-2">x{item.quantity}</span>
+                  </div>
+                ))}
+                {(order.order_items?.length || 0) > 2 && (
+                  <div className="text-[10px] text-[#8C8074] italic">
+                    +{ (order.order_items?.length || 0) - 2 } more items
+                  </div>
+                )}
+              </div>
+
+              {/* Footer: Price + Details Action */}
+              <div className="flex items-center justify-between pt-2 border-t border-[#F0E6D8]">
+                <div>
+                  <div className="font-serif font-bold text-sm text-[#25201D]">
+                    {formatPrice(order.total)}
+                  </div>
+                  <div className="text-[9px] uppercase font-semibold text-[#8C8074]">
+                    {order.payment_method} · {order.payment_status}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => openOrderDetails(order)}
+                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-2xs hover:shadow-xs transition-all active:scale-95 inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Manage Order</span>
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
       {filteredOrders.length === 0 && (
         <div className="p-12 text-center bg-white rounded-2xl border border-[#E8DCC8] shadow-xs space-y-3">
           <Package className="w-12 h-12 text-[#B88A3B] mx-auto opacity-70" />
@@ -637,10 +741,10 @@ export default function AdminOrdersPage() {
       {/* ORDER DETAILS & DISPATCH SLIP MODAL */}
       {/* ========================================================================= */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto custom-scrollbar">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-2xl max-w-2xl w-full max-h-[92vh] sm:max-h-[88vh] overflow-y-auto custom-scrollbar">
             {/* Modal Header */}
-            <div className="p-6 border-b border-[#F0E6D8] flex items-center justify-between bg-gradient-to-r from-[#FAF7F2] to-white">
+            <div className="p-4 sm:p-6 border-b border-[#F0E6D8] flex items-center justify-between bg-gradient-to-r from-[#FAF7F2] to-white">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-base font-extrabold text-[#651F35]">
@@ -685,7 +789,7 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* PENDING ACCEPTANCE BANNER INSIDE MODAL */}
               {selectedOrder.status === "pending" && (
                 <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-white border-2 border-amber-300 flex items-center justify-between gap-4">
@@ -992,14 +1096,14 @@ export default function AdminOrdersPage() {
       {/* BOOK CUSTOMER ORDER MODAL (ADMIN MANUAL BOOKING) */}
       {/* ========================================================================= */}
       {isBookModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-2xl max-w-lg w-full max-h-[92vh] overflow-y-auto custom-scrollbar">
-            <div className="p-6 border-b border-[#F0E6D8] flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-2xl max-w-lg w-full max-h-[92vh] sm:max-h-[88vh] overflow-y-auto custom-scrollbar">
+            <div className="p-4 sm:p-6 border-b border-[#F0E6D8] flex items-center justify-between">
               <div>
-                <h3 className="font-serif text-lg font-bold text-[#25201D]">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-[#25201D]">
                   Book Customer Order Manually
                 </h3>
-                <p className="text-xs text-[#6B5E51] mt-0.5">
+                <p className="text-[11px] sm:text-xs text-[#6B5E51] mt-0.5">
                   Record orders placed via WhatsApp, Phone Call, or Direct Store Inquiries.
                 </p>
               </div>
@@ -1011,9 +1115,9 @@ export default function AdminOrdersPage() {
               </button>
             </div>
 
-            <form onSubmit={handleBookOrderSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleBookOrderSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
               {/* Customer Name & Phone */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-xs font-bold text-[#25201D] mb-1">
                     Customer Name *
@@ -1065,7 +1169,7 @@ export default function AdminOrdersPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-[#25201D] mb-1">City</label>
                   <input

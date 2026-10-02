@@ -161,24 +161,24 @@ export default function AdminCouponsPage() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#181214] via-[#2A161F] to-[#451424] text-white p-6 md:p-8 border border-[#D4AF37]/30 shadow-xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-xl">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#181214] via-[#2A161F] to-[#451424] text-white p-5 sm:p-6 lg:p-8 border border-[#D4AF37]/30 shadow-xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+          <div className="space-y-1.5 sm:space-y-2 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Promotions & Campaigns</span>
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-[#FFF9EF]">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-[#FFF9EF]">
               Coupons & Discount Vouchers
             </h2>
-            <p className="text-sm text-[#D8CFBC] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#D8CFBC] leading-relaxed">
               Create and manage promo discount codes for customer marketing campaigns, festive events, and cart abandonment incentives.
             </p>
           </div>
 
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] hover:from-[#E5C158] hover:to-[#C99B4C] text-[#181214] font-bold text-sm shadow-lg shadow-[#D4AF37]/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] hover:from-[#E5C158] hover:to-[#C99B4C] text-[#181214] font-bold text-xs sm:text-sm shadow-lg shadow-[#D4AF37]/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             <Plus className="w-4 h-4 text-[#181214]" />
             <span>Create New Coupon</span>
@@ -186,50 +186,50 @@ export default function AdminCouponsPage() {
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-5 border border-[#E8DCC8] shadow-xs">
-          <div className="flex items-center justify-between text-[#8B6E32] mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Active Codes</span>
-            <div className="p-2 rounded-lg bg-[#FAF7F2] text-emerald-700">
-              <TicketPercent className="w-4 h-4" />
+      {/* Metrics Row - 2 cols on mobile, 4 cols on lg */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white rounded-xl p-3.5 sm:p-5 border border-[#E8DCC8] shadow-2xs">
+          <div className="flex items-center justify-between text-[#8B6E32] mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Active Codes</span>
+            <div className="p-1.5 sm:p-2 rounded-lg bg-[#FAF7F2] text-emerald-700 shrink-0">
+              <TicketPercent className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="font-serif text-2xl font-bold text-[#25201D]">{activeCount} Live</div>
-          <div className="text-xs text-[#6B5E51] mt-1">Ready for customer checkout</div>
+          <div className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">{activeCount} Live</div>
+          <div className="text-[10px] sm:text-xs text-[#6B5E51] mt-1 truncate">Ready for checkout</div>
         </div>
 
-        <div className="bg-white rounded-xl p-5 border border-[#E8DCC8] shadow-xs">
-          <div className="flex items-center justify-between text-[#8B6E32] mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Coupons</span>
-            <div className="p-2 rounded-lg bg-[#FAF7F2] text-[#651F35]">
-              <Tag className="w-4 h-4" />
+        <div className="bg-white rounded-xl p-3.5 sm:p-5 border border-[#E8DCC8] shadow-2xs">
+          <div className="flex items-center justify-between text-[#8B6E32] mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Total Codes</span>
+            <div className="p-1.5 sm:p-2 rounded-lg bg-[#FAF7F2] text-[#651F35] shrink-0">
+              <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="font-serif text-2xl font-bold text-[#25201D]">{coupons.length} Total</div>
-          <div className="text-xs text-[#6B5E51] mt-1">{coupons.length - activeCount} paused or expired</div>
+          <div className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">{coupons.length} Total</div>
+          <div className="text-[10px] sm:text-xs text-[#6B5E51] mt-1 truncate">{coupons.length - activeCount} paused/expired</div>
         </div>
 
-        <div className="bg-white rounded-xl p-5 border border-[#E8DCC8] shadow-xs">
-          <div className="flex items-center justify-between text-[#8B6E32] mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Redemptions</span>
-            <div className="p-2 rounded-lg bg-[#FAF7F2] text-indigo-700">
-              <TrendingUp className="w-4 h-4" />
+        <div className="bg-white rounded-xl p-3.5 sm:p-5 border border-[#E8DCC8] shadow-2xs">
+          <div className="flex items-center justify-between text-[#8B6E32] mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Redemptions</span>
+            <div className="p-1.5 sm:p-2 rounded-lg bg-[#FAF7F2] text-indigo-700 shrink-0">
+              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="font-serif text-2xl font-bold text-[#25201D]">{totalRedemptions} Uses</div>
-          <div className="text-xs text-[#6B5E51] mt-1">Applied across checkout orders</div>
+          <div className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">{totalRedemptions} Uses</div>
+          <div className="text-[10px] sm:text-xs text-[#6B5E51] mt-1 truncate">Applied across orders</div>
         </div>
 
-        <div className="bg-white rounded-xl p-5 border border-[#E8DCC8] shadow-xs">
-          <div className="flex items-center justify-between text-[#8B6E32] mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Top Offer</span>
-            <div className="p-2 rounded-lg bg-[#FAF7F2] text-[#B88A3B]">
-              <Sparkles className="w-4 h-4" />
+        <div className="bg-white rounded-xl p-3.5 sm:p-5 border border-[#E8DCC8] shadow-2xs">
+          <div className="flex items-center justify-between text-[#8B6E32] mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Top Offer</span>
+            <div className="p-1.5 sm:p-2 rounded-lg bg-[#FAF7F2] text-[#B88A3B] shrink-0">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="font-serif text-2xl font-bold text-[#651F35]">TRENDY40</div>
-          <div className="text-xs text-[#6B5E51] mt-1">40% Off on orders &gt; ₹1,999</div>
+          <div className="font-serif text-xl sm:text-2xl font-bold text-[#651F35] truncate">TRENDY40</div>
+          <div className="text-[10px] sm:text-xs text-[#6B5E51] mt-1 truncate">40% Off &gt; ₹1,999</div>
         </div>
       </div>
 
@@ -417,14 +417,14 @@ export default function AdminCouponsPage() {
 
       {/* Create / Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="p-6 border-b border-[#F0E6D8] flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl border border-[#E8DCC8] shadow-2xl max-w-lg w-full max-h-[92vh] sm:max-h-[88vh] overflow-y-auto custom-scrollbar">
+            <div className="p-4 sm:p-6 border-b border-[#F0E6D8] flex items-center justify-between">
               <div>
-                <h3 className="font-serif text-lg font-bold text-[#25201D]">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-[#25201D]">
                   {editingCoupon ? "Edit Promotional Coupon" : "Create New Promotional Coupon"}
                 </h3>
-                <p className="text-xs text-[#6B5E51] mt-0.5">
+                <p className="text-[11px] sm:text-xs text-[#6B5E51] mt-0.5">
                   Configure discount formula, eligibility criteria, and expiration.
                 </p>
               </div>
@@ -436,7 +436,7 @@ export default function AdminCouponsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
               {/* Code */}
               <div>
                 <label className="block text-xs font-bold text-[#25201D] mb-1">

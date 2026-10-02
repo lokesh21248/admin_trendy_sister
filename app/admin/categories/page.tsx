@@ -70,21 +70,21 @@ export default function AdminCategoriesPage() {
   return (
     <div className="space-y-6">
       {/* Page Title & Add Buttons */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-[#25201D]">
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#25201D]">
             Categories & Curated Showcases
           </h2>
-          <p className="text-xs text-[#6B5E51] mt-1">
+          <p className="text-[11px] sm:text-xs text-[#6B5E51] mt-1">
             Organize saree taxonomy, silk weaves, festive edits, and promotional landing pages.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {activeTab === "categories" ? (
             <button
               onClick={() => setIsAddCatOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#651F35] to-[#8B2D47] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Add Saree Category</span>
@@ -92,7 +92,7 @@ export default function AdminCategoriesPage() {
           ) : (
             <button
               onClick={() => setIsAddColOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] text-[#181214] text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] text-[#181214] text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Add Curated Edit</span>
@@ -102,10 +102,10 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E8DCC8] pb-1">
+      <div className="flex items-center gap-2 border-b border-[#E8DCC8] pb-1 overflow-x-auto">
         <button
           onClick={() => setActiveTab("categories")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
             activeTab === "categories"
               ? "border-[#651F35] text-[#651F35]"
               : "border-transparent text-[#6B5E51] hover:text-[#25201D]"
@@ -117,20 +117,20 @@ export default function AdminCategoriesPage() {
 
         <button
           onClick={() => setActiveTab("collections")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
             activeTab === "collections"
               ? "border-[#D4AF37] text-[#8B6E32]"
               : "border-transparent text-[#6B5E51] hover:text-[#25201D]"
           }`}
         >
           <Sparkles className="w-4 h-4" />
-          <span>Curated Collections & Edits ({collections.length})</span>
+          <span>Curated Collections ({collections.length})</span>
         </button>
       </div>
 
       {/* Tab Content 1: Categories */}
       {activeTab === "categories" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {categories.map((cat) => (
             <div
               key={cat.id}
@@ -220,7 +220,7 @@ export default function AdminCategoriesPage() {
 
       {/* Tab Content 2: Collections */}
       {activeTab === "collections" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {collections.map((col) => (
             <div
               key={col.id}
