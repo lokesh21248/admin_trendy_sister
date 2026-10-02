@@ -91,46 +91,71 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-5 sm:space-y-6 lg:space-y-8 w-full max-w-full overflow-hidden">
       {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#181214] via-[#2A161F] to-[#451424] text-white p-4.5 sm:p-6 md:p-8 border border-[#D4AF37]/30 shadow-xl w-full">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#D4AF37]/20 via-transparent to-transparent pointer-events-none" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#181214] via-[#2A161F] to-[#451424] text-white p-5 sm:p-6 md:p-8 border border-[#D4AF37]/30 shadow-xl w-full">
+        {/* Ambient Gold Radial Glow */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#D4AF37]/15 via-transparent to-transparent pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4.5 sm:gap-6">
-          <div className="space-y-2 sm:space-y-2.5 max-w-xl min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-[10px] sm:text-xs font-semibold uppercase tracking-wider max-w-full">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          {/* Left: Content Block & CTA Buttons */}
+          <div className="space-y-3 sm:space-y-3.5 max-w-2xl flex-1 min-w-0">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-[11px] sm:text-xs font-semibold uppercase tracking-wider w-fit">
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">Trendy Sisters Haute Couture Admin</span>
+              <span>Trendy Sisters Haute Couture Admin</span>
             </div>
 
-            <h2 className="font-serif text-[clamp(1.25rem,4.5vw,1.875rem)] font-bold tracking-tight text-[#FFF9EF] leading-tight">
+            <h2 className="font-serif text-[clamp(1.35rem,3.2vw,2rem)] font-bold tracking-tight text-[#FFF9EF] leading-tight">
               Welcome back, Lead Merchandiser
             </h2>
 
-            <p className="text-xs sm:text-sm text-[#D8CFBC] leading-relaxed max-w-lg">
+            <p className="text-xs sm:text-sm text-[#D8CFBC] leading-relaxed max-w-xl">
               Your saree catalog health is currently at{" "}
               <strong className="text-[#D4AF37] font-semibold">
                 {stats.designHealthScore}%
               </strong>
               . Audit pending fabric specs, palette swatches, and high-res angles to ensure supreme customer drape fidelity.
             </p>
+
+            {/* CTA Buttons - Stacked on mobile, side-by-side on tablet/desktop */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1.5">
+              <Link
+                href="/admin/design-checker"
+                className="min-h-[44px] whitespace-nowrap inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] hover:from-[#E5C158] hover:to-[#C99B4C] text-[#181214] font-semibold text-xs sm:text-sm shadow-md shadow-[#D4AF37]/20 transition-all active:scale-[0.98] text-center cursor-pointer"
+              >
+                <ShieldCheck className="w-4 h-4 text-[#181214] shrink-0" />
+                <span>Launch Design Checker</span>
+                <ArrowRight className="w-4 h-4 text-[#181214] shrink-0" />
+              </Link>
+
+              <Link
+                href="/admin/products?action=new"
+                className="min-h-[44px] whitespace-nowrap inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs sm:text-sm border border-white/20 transition-all active:scale-[0.98] text-center cursor-pointer"
+              >
+                <Plus className="w-4 h-4 shrink-0" />
+                <span>Add New Saree</span>
+              </Link>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto shrink-0 pt-1 sm:pt-0">
-            <Link
-              href="/admin/design-checker"
-              className="w-full sm:w-auto min-h-[44px] whitespace-nowrap inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B88A3B] hover:from-[#E5C158] hover:to-[#C99B4C] text-[#181214] font-semibold text-xs sm:text-sm shadow-md shadow-[#D4AF37]/20 transition-all active:scale-[0.98] text-center"
-            >
-              <ShieldCheck className="w-4 h-4 text-[#181214] shrink-0" />
-              <span>Launch Design Checker</span>
-              <ArrowRight className="w-4 h-4 text-[#181214] shrink-0" />
-            </Link>
-
-            <Link
-              href="/admin/products?action=new"
-              className="w-full sm:w-auto min-h-[44px] whitespace-nowrap inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs sm:text-sm border border-white/20 transition-all active:scale-[0.98] text-center"
-            >
-              <Plus className="w-4 h-4 shrink-0" />
-              <span>Add New Saree</span>
-            </Link>
+          {/* Right: Quick Catalog Quality Status Card on Large Screens */}
+          <div className="hidden lg:flex flex-col items-end gap-3 shrink-0 pl-6 border-l border-white/10">
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs text-right space-y-2 min-w-[210px]">
+              <div className="text-[10px] uppercase font-semibold tracking-wider text-[#D4AF37]">
+                Catalog Quality Score
+              </div>
+              <div className="font-serif text-3xl font-bold text-white flex items-center justify-end gap-2">
+                <span>{stats.designHealthScore}%</span>
+                <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
+              </div>
+              <div className="text-[11px] text-[#D8CFBC]">
+                {stats.checklist.complete} of {stats.totalSarees} Sarees Ready
+              </div>
+              <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#D4AF37] to-emerald-400 rounded-full transition-all duration-500"
+                  style={{ width: `${stats.designHealthScore}%` }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
