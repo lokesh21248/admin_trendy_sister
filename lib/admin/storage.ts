@@ -10,8 +10,9 @@ export interface UploadResult {
 
 /**
  * Uploads an image file to the designated Supabase Storage bucket.
- * Generates a clean timestamped filename and returns the public CDN URL.
- * Falls back to Base64 data URL if network fails or RLS blocks.
+ * Generates a sanitized, timestamped filename (alphanumeric + hyphens only)
+ * and returns the public CDN URL. Throws a descriptive error on failure
+ * so the UI can show it to the user rather than silently saving a broken URL.
  */
 export async function uploadImageToStorage(
   file: File,
@@ -20,13 +21,17 @@ export async function uploadImageToStorage(
 ): Promise<UploadResult> {
   const supabase = createClient()
 
-  // Clean filename: remove special chars and append timestamp
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg"
+  // Sanitize filename: lowercase, alphanumeric+hyphens only, no leading/trailing/double hyphens
+  const ext = file.name.split(".").pop()?.toLowerCase()?.replace(/[^a-z0-9]/g, "") || "jpg"
   const cleanName = file.name
-    .replace(/\.[^/.]+$/, "")
+    .replace(/\.[^/.]+$/, "")     // remove extension
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .slice(0, 30)
+    .replace(/[^a-z0-9]+/g, "-") // replace non-alphanumeric with hyphens
+    .replace(/^-+|-+$/g, "")     // trim leading/trailing hyphens
+    .replace(/-{2,}/g, "-")      // collapse consecutive hyphens
+    .slice(0, 40)                 // limit length
+    .replace(/^-+|-+$/g, "")     // trim again after slice
+    || "image"                    // fallback if name becomes empty
 
   const timestamp = Date.now()
   const filePath = `${prefix}-${cleanName}-${timestamp}.${ext}`
@@ -38,14 +43,8 @@ export async function uploadImageToStorage(
     })
 
     if (error) {
-      console.warn(`Supabase storage upload error in ${bucket}:`, error)
-      // Fallback to Base64 data URL
-      const fallbackUrl = await fileToBase64(file)
-      return {
-        url: fallbackUrl,
-        path: filePath,
-        error: error.message,
-      }
+      console.error(`Supabase storage upload error in '${bucket}':`, error)
+      throw new Error(`Upload failed: ${error.message}. Please try again or use a different image file.`)
     }
 
     if (data) {
@@ -56,15 +55,11 @@ export async function uploadImageToStorage(
         error: null,
       }
     }
-  } catch (err: any) {
-    console.warn("Storage upload exception, falling back to base64:", err)
-  }
 
-  // Fallback to Base64 data URL so user can always see and save their image
-  const fallbackUrl = await fileToBase64(file)
-  return {
-    url: fallbackUrl,
-    path: filePath,
+    throw new Error("Upload succeeded but no data returned. Please retry.")
+  } catch (err: any) {
+    // Re-throw so the UI catches and shows the error to the user
+    throw new Error(err?.message || "Failed to upload image. Please try again.")
   }
 }
 
