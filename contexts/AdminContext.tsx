@@ -799,7 +799,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const createCategory = useCallback(
     async (data: Partial<Category>) => {
       const newCat: Category = {
-        id: "cat-" + Math.random().toString(36).substring(2, 9),
+        id: crypto.randomUUID(),
         name: data.name || "New Category",
         slug:
           data.slug ||
@@ -849,7 +849,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const createCollection = useCallback(
     async (data: Partial<Collection>) => {
       const newCol: Collection = {
-        id: "col-" + Math.random().toString(36).substring(2, 9),
+        id: crypto.randomUUID(),
         name: data.name || "New Curated Edit",
         slug:
           data.slug ||
@@ -899,7 +899,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const createBanner = useCallback(
     async (data: Partial<Banner>) => {
       const newBanner: Banner = {
-        id: "ban-" + Math.random().toString(36).substring(2, 9),
+        id: crypto.randomUUID(),
         title: data.title || "Luxury Saree Headline",
         subtitle: data.subtitle || null,
         image_url:
