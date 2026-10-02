@@ -930,7 +930,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {}
       showToast("Banner Removed", "Slide deleted from hero section.", "info")
     },
-    },
     [showToast]
   )
 
